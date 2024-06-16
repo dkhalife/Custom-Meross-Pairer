@@ -4,7 +4,7 @@ buildscript {
     
     repositories {
         google()
-        jcenter()
+        mavenCentral()
         
     }
     dependencies {
@@ -22,12 +22,12 @@ plugins {
 allprojects {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
         maven { url "https://repo.eclipse.org/content/repositories/paho-snapshots/" }
         maven { url 'https://jitpack.io' }
     }
 }
 
-task clean(type: Delete) {
+tasks.register('clean', Delete) {
     delete rootProject.buildDir
 }
