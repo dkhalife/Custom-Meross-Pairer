@@ -27,8 +27,8 @@ public class PairCompletedFragment extends Fragment {
     private CheckView mCheckView;
     private TextView mTextView;
     private ImageView mQuestionMarkView;
-    private Timer mTimer;
-    private Handler mHandler;
+    private final Timer mTimer;
+    private final Handler mHandler;
     private Button pairDoneButton;
     private boolean mVerified;
 

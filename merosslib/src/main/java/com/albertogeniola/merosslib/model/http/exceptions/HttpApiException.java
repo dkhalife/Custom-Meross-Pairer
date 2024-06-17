@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 public class HttpApiException extends Exception {
-    private ErrorCodes code;
+    private final ErrorCodes code;
     public HttpApiException(ErrorCodes code) {
         this(code, "HTTP Api returned status code " + code.getCode());
     }

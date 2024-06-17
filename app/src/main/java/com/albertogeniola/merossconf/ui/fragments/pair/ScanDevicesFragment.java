@@ -60,7 +60,7 @@ public class ScanDevicesFragment extends Fragment {
     private LocationManager locationManager = null;
     private ProgressBar scanningProgressBar;
     private FloatingActionButton fab;
-    private MerossWifiScanAdapter adapter = new MerossWifiScanAdapter();
+    private final MerossWifiScanAdapter adapter = new MerossWifiScanAdapter();
     private SwipeRefreshLayout swipeContainer;
     private Handler uiHandler;
     private boolean scanning;
@@ -283,7 +283,7 @@ public class ScanDevicesFragment extends Fragment {
     }
 
     class MerossWifiScanAdapter extends RecyclerView.Adapter<MerossWifiScanAdapter.MyViewHolder>{
-        private ArrayList<ScanResult> scanResult;
+        private final ArrayList<ScanResult> scanResult;
 
         MerossWifiScanAdapter(){
             this.scanResult = new ArrayList<>();
@@ -331,9 +331,9 @@ public class ScanDevicesFragment extends Fragment {
 
             MyViewHolder(View itemView) {
                 super(itemView);
-                wifiName = (TextView) itemView.findViewById(R.id.ssid);
-                bssidName = (TextView) itemView.findViewById(R.id.bssid);
-                signalStrength = (ImageView)itemView.findViewById(R.id.wifiSignalStrength);
+                wifiName = itemView.findViewById(R.id.ssid);
+                bssidName = itemView.findViewById(R.id.bssid);
+                signalStrength = itemView.findViewById(R.id.wifiSignalStrength);
             }
 
             public void updateScanResult(ScanResult sr) {

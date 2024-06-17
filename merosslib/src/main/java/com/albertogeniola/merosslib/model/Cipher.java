@@ -17,8 +17,8 @@ public enum Cipher {
     AES(3),
     TIKPAES(4);
 
-    private int value;
-    private Cipher(int value) {
+    private final int value;
+    Cipher(int value) {
         this.value = value;
     }
     public static Cipher findByAbbr(int value)

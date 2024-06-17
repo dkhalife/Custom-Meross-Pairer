@@ -110,7 +110,7 @@ public class LoginFragment extends Fragment {
 
         // Configure HostEditText for progress showing
         mSearchProgress = new CircularProgressIndicator(requireContext(), null);
-        mSearchProgress.setIndicatorSize((int)dpToPx(requireContext(), 15));
+        mSearchProgress.setIndicatorSize(dpToPx(requireContext(), 15));
         mSearchProgress.setIndeterminate(true);
         mProgressIndicatorDrawable = mSearchProgress.getIndeterminateDrawable();
         // Show/Hide password logic

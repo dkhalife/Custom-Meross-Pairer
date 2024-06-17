@@ -19,6 +19,7 @@ import com.squareup.okhttp.Response;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.SocketFactory;
@@ -29,11 +30,11 @@ import lombok.Getter;
 public class MerossDeviceAp implements Serializable {
 
     @Getter
-    private String ip;
+    private final String ip;
     @Getter
-    private String cloudKey;
-    private OkHttpClient client;
-    private Gson g = Utils.getGson();
+    private final String cloudKey;
+    private final OkHttpClient client;
+    private final Gson g = Utils.getGson();
 
     public void setSocketFactory(SocketFactory factory) {
         client.setSocketFactory(factory);
@@ -77,7 +78,7 @@ public class MerossDeviceAp implements Serializable {
         Request request = new Request.Builder()
                 .url("http://" + ip + "/config")
                 .addHeader("Content-Type", "application/json")
-                .post(RequestBody.create(MediaType.parse("application/json; charset=utf-8"), g.toJson(message).getBytes("utf8")))
+                .post(RequestBody.create(MediaType.parse("application/json; charset=utf-8"), g.toJson(message).getBytes(StandardCharsets.UTF_8)))
                 .build();
         Response response = client.newCall(request).execute();
 

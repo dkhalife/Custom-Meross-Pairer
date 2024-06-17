@@ -42,7 +42,7 @@ public class ConfigureMqttFragment extends Fragment {
     private TextInputLayout customMqttKey;
     private MqttConfiguration mDiscoveredConfig;
     private ArrayAdapter<MqttConfiguration> adapter;
-    private MqttConfiguration newMqttConfig = new MqttConfiguration("Add new...", null, -1);
+    private final MqttConfiguration newMqttConfig = new MqttConfiguration("Add new...", null, -1);
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -143,7 +143,7 @@ public class ConfigureMqttFragment extends Fragment {
             }
         });
 
-        mqttConfigurationSpinner.setSelection(adapter.getCount()-1, true); ;
+        mqttConfigurationSpinner.setSelection(adapter.getCount()-1, true);
 
         pairButton.setOnClickListener(new View.OnClickListener() {
             @Override

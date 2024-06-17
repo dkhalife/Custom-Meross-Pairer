@@ -46,7 +46,7 @@ public class ExecutePairingFragment extends AbstractWifiFragment {
     private static final String TAG = "PairingFragment";
     private static final int WIFI_CONNECT_DELAY = 5000;
 
-    private ScheduledExecutorService worker;
+    private final ScheduledExecutorService worker;
 
     private PairActivityViewModel pairActivityViewModel;
     private TextView errorDetailsTextView;

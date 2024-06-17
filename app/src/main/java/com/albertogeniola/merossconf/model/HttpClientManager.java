@@ -90,7 +90,7 @@ public class HttpClientManager {
     }
 
     private static abstract class CallbackTask<T> {
-        private Callback<T> mCallback;
+        private final Callback<T> mCallback;
 
         public CallbackTask(Callback<T> callback) {
             mCallback = callback;
@@ -135,7 +135,7 @@ public class HttpClientManager {
     private abstract static class HttpClientTask<T> extends AsyncTask<MerossHttpClient, Void, T> {}
 
     public interface Callback<T> {
-        public void onSuccess(T result);
-        public void onFailure(Exception exception);
+        void onSuccess(T result);
+        void onFailure(Exception exception);
     }
 }

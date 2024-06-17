@@ -15,7 +15,7 @@ import com.albertogeniola.merossconf.R;
 
 
 public class TaskLine extends LinearLayout {
-    private Context context;
+    private final Context context;
     private TextView taskTitleTextView;
     private ProgressBar taskLine_progressSpinner;
     private ImageView taskLine_taskIcon;
@@ -46,9 +46,9 @@ public class TaskLine extends LinearLayout {
 
     private void init() {
         View rootView = inflate(context, R.layout.task_line, this);
-        taskTitleTextView = (TextView) rootView.findViewById(R.id.taskLine_taskTitle);
-        taskLine_progressSpinner = (ProgressBar) rootView.findViewById(R.id.taskLine_progressSpinner);
-        taskLine_taskIcon = (ImageView)rootView.findViewById(R.id.taskLine_taskIcon);
+        taskTitleTextView = rootView.findViewById(R.id.taskLine_taskTitle);
+        taskLine_progressSpinner = rootView.findViewById(R.id.taskLine_progressSpinner);
+        taskLine_taskIcon = rootView.findViewById(R.id.taskLine_taskIcon);
 
         taskTitleTextView.setText(taskTitle);
         taskLine_progressSpinner.setIndeterminate(true);
@@ -95,6 +95,6 @@ public class TaskLine extends LinearLayout {
         running,
         completed,
         failed,
-        skipped;
+        skipped
     }
 }

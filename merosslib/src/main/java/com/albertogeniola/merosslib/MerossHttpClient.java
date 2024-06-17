@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
@@ -51,7 +52,7 @@ public class MerossHttpClient implements Serializable {
 
     // Class attributes
     private ApiCredentials mCredentials;
-    private OkHttpClient mClient;
+    private final OkHttpClient mClient;
 
     public MerossHttpClient() {
         this(null, new OkHttpClient());
@@ -71,7 +72,7 @@ public class MerossHttpClient implements Serializable {
     }
 
     @SneakyThrows(UnsupportedEncodingException.class)
-    public void login(String apiUrl, String username, String password) throws IOException, HttpApiException, HttpApiInvalidCredentialsException {
+    public void login(String apiUrl, String username, String password) throws IOException, HttpApiException {
         HashMap<String, Object> data = new HashMap<>();
         data.put("email", username);
         data.put("password", password);
@@ -87,14 +88,14 @@ public class MerossHttpClient implements Serializable {
         );
     }
 
-    public List<DeviceInfo> listDevices() throws IOException, HttpApiException, HttpApiInvalidCredentialsException {
+    public List<DeviceInfo> listDevices() throws IOException, HttpApiException {
         HashMap<String, Object> data = new HashMap<>();
         TypeToken<?> typeToken = TypeToken.getParameterized(List.class, DeviceInfo.class);
         List<DeviceInfo> devices = authenticatedPost( mCredentials.getApiServer()+DEVICE_LIST, data, this.mCredentials.getToken(), typeToken.getType());
         return devices;
     }
 
-    public void logout() throws HttpApiInvalidCredentialsException, HttpApiException, IOException {
+    public void logout() throws HttpApiException, IOException {
         if (mCredentials == null) {
             throw new IllegalStateException("Invalid logout operation: this client is not logged in.");
         }
@@ -126,16 +127,16 @@ public class MerossHttpClient implements Serializable {
     }
 
     @SneakyThrows({UnsupportedEncodingException.class, NoSuchAlgorithmException.class})
-    private <T> T authenticatedPost(@NonNull String url, HashMap<String, Object> data, String httpToken, Type dataType) throws IOException, HttpApiException, HttpApiInvalidCredentialsException {
+    private <T> T authenticatedPost(@NonNull String url, HashMap<String, Object> data, String httpToken, Type dataType) throws IOException, HttpApiException {
 
         String nonce = generateNonce(16);
         long timestampMillis = new Date().getTime();
-        String params = new String(Base64.encodeBase64(g.toJson(data == null ? DEFAULT_PARAMS : data ).getBytes("utf8")), "utf8");
+        String params = new String(Base64.encodeBase64(g.toJson(data == null ? DEFAULT_PARAMS : data ).getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8);
 
         // Generate the md5-hash (called signature)
         MessageDigest m = MessageDigest.getInstance("md5");
         String dataToSign = SECRET + timestampMillis + nonce + params;
-        m.update(dataToSign.getBytes("utf8"));
+        m.update(dataToSign.getBytes(StandardCharsets.UTF_8));
         String md5hash = toHexString(m.digest());
 
         HashMap<String, Object> payload = new HashMap<>();
@@ -153,10 +154,10 @@ public class MerossHttpClient implements Serializable {
                 .addHeader("AppVersion", "1.3.0")
                 .addHeader("AppLanguage", "EN")
                 .addHeader("User-Agent", "okhttp/3.6.0")
-                .post(RequestBody.create(MediaType.parse("application/json; charset=utf-8"), requestData.getBytes("utf8")))
+                .post(RequestBody.create(MediaType.parse("application/json; charset=utf-8"), requestData.getBytes(StandardCharsets.UTF_8)))
                 .build();
 
-        l.fine("HTTP Request, METHOD:" + request.method().toString() +", URL: " + request.urlString() + ", HEADERS: "+ request.headers() +", DATA:" +requestData);
+        l.fine("HTTP Request, METHOD:" + request.method() +", URL: " + request.urlString() + ", HEADERS: "+ request.headers() +", DATA:" +requestData);
         Response response = mClient.newCall(request).execute();
         String strdata = response.body().string();
         l.fine("HTTP Response, STATUS_CODE: "+response.code()+", HEADERS: "+response.headers() + ", BODY: "+strdata);

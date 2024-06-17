@@ -7,6 +7,7 @@ import com.google.gson.annotations.SerializedName;
 import org.apache.commons.codec.binary.Base64;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 import lombok.Getter;
 
@@ -32,11 +33,7 @@ public class GetConfigWifiListEntry {
 
     public String getSsid() {
         if (base64ssid != null) {
-            try {
-                return new String( Base64.decodeBase64(base64ssid.getBytes()), "utf8");
-            } catch (UnsupportedEncodingException e) {
-                throw new RuntimeException("Unsupported encoding");
-            }
+            return new String( Base64.decodeBase64(base64ssid.getBytes()), StandardCharsets.UTF_8);
         }
         return null;
     }

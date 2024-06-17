@@ -5,6 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
@@ -52,9 +53,9 @@ public class Header implements Serializable {
 
         try {
             MessageDigest md = MessageDigest.getInstance("md5");
-            md.update(signatureBuilder.toString().getBytes("utf8"));
+            md.update(signatureBuilder.toString().getBytes(StandardCharsets.UTF_8));
             signature = toHex(md.digest());
-        } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
+        } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
         }

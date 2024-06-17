@@ -21,8 +21,8 @@ public enum Encryption {
     WPA1WPA2(7),
     WPA1PSKWPA2PSK(8);
 
-    private int value;
-    private Encryption(int value) {
+    private final int value;
+    Encryption(int value) {
         this.value = value;
     }
     public static Encryption findByAbbr(int value)

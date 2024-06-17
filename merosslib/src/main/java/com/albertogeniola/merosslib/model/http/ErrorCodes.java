@@ -42,7 +42,7 @@ public enum ErrorCodes {
     @SerializedName("5000")
     CODE_GENERIC_ERROR(5000);
 
-    private int value;
+    private final int value;
     ErrorCodes(int val) {
         this.value = val;
     }

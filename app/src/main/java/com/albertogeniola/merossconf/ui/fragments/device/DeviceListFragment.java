@@ -99,7 +99,7 @@ public class DeviceListFragment extends Fragment {
         });
     }
 
-    private View.OnClickListener refreshButtonClickListener = new View.OnClickListener() {
+    private final View.OnClickListener refreshButtonClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             updateData();

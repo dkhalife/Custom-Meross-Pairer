@@ -14,15 +14,15 @@ import com.albertogeniola.merosslib.model.protocol.MessageGetSystemAllResponse;
 
 public class PairActivityViewModel extends ViewModel {
     // Wrapper around the Meross AP
-    private MutableLiveData<com.albertogeniola.merosslib.MerossDeviceAp> apDevice;
-    private MutableLiveData<MerossDeviceAp> merossDeviceWifiAp;
-    private MutableLiveData<WifiConfiguration> localWifiNetwork;
-    private MutableLiveData<MessageGetConfigWifiListResponse> deviceAvailableWifis;
-    private MutableLiveData<MqttConfiguration> targetMqttConfig;
-    private MutableLiveData<MessageGetSystemAllResponse> deviceInfo;
-    private MutableLiveData<WifiLocationStatus> wifiLocationStatus;
-    private MutableLiveData<String> overridedKey;
-    private MutableLiveData<String> overridedUserId;
+    private final MutableLiveData<com.albertogeniola.merosslib.MerossDeviceAp> apDevice;
+    private final MutableLiveData<MerossDeviceAp> merossDeviceWifiAp;
+    private final MutableLiveData<WifiConfiguration> localWifiNetwork;
+    private final MutableLiveData<MessageGetConfigWifiListResponse> deviceAvailableWifis;
+    private final MutableLiveData<MqttConfiguration> targetMqttConfig;
+    private final MutableLiveData<MessageGetSystemAllResponse> deviceInfo;
+    private final MutableLiveData<WifiLocationStatus> wifiLocationStatus;
+    private final MutableLiveData<String> overridedKey;
+    private final MutableLiveData<String> overridedUserId;
 
 
     public PairActivityViewModel() {

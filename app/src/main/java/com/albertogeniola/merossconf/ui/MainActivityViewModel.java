@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel;
 import com.albertogeniola.merosslib.model.http.ApiCredentials;
 
 public class MainActivityViewModel extends ViewModel {
-    private MutableLiveData<ApiCredentials> mCredentials;
+    private final MutableLiveData<ApiCredentials> mCredentials;
 
     public MainActivityViewModel() {
         mCredentials = new MutableLiveData<>();

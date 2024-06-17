@@ -3,6 +3,8 @@ package com.albertogeniola.merossconf.model;
 import android.util.Base64;
 import com.albertogeniola.merosslib.model.protocol.payloads.GetConfigWifiListEntry;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
+
 import lombok.Getter;
 
 @Getter
@@ -16,11 +18,6 @@ public class WifiConfiguration {
     }
 
     public String getWifiPasswordBase64() {
-        try{
-            return Base64.encodeToString(clearWifiPassword.toString().getBytes("utf8"), Base64.NO_WRAP);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            throw new RuntimeException("UTF8 unsupported");
-        }
+        return Base64.encodeToString(clearWifiPassword.toString().getBytes(StandardCharsets.UTF_8), Base64.NO_WRAP);
     }
 }

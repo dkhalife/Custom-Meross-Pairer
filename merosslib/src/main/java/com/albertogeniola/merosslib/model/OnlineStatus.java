@@ -16,8 +16,8 @@ public enum OnlineStatus {
     OFFLINE(2),
     UPGRADING(3);
 
-    private int value;
-    private OnlineStatus(int value) {
+    private final int value;
+    OnlineStatus(int value) {
         this.value = value;
     }
 

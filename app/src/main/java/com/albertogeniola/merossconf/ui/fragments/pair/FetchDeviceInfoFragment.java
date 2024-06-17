@@ -66,13 +66,13 @@ public class FetchDeviceInfoFragment extends AbstractWifiFragment {
     private TaskLine fetchDeviceInfoTask;
     private TaskLine scanWifiTask;
     private Handler uiThreadHandler;
-    private ScheduledExecutorService worker;
+    private final ScheduledExecutorService worker;
 
     private State state = State.INIT;
     private TaskLine currentTask = null;
-    private String gatewayIp = null;
+    private final String gatewayIp = null;
     private String error = null;
-    private MerossDeviceAp device = new MerossDeviceAp();
+    private final MerossDeviceAp device = new MerossDeviceAp();
     private MessageGetSystemAllResponse deviceInfo;
     private MessageGetConfigWifiListResponse deviceAvailableWifis;
 
