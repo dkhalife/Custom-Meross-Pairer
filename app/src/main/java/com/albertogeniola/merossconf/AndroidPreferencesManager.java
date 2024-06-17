@@ -23,7 +23,18 @@ public class AndroidPreferencesManager {
     private static final String PREFS_WIFI_CREDS = "com.albertogeniola.merossconf.shared_preferences.wifi_creds";
     private static final String KEY_MQTT_CONF = "mqtt";
     private static final String KEY_HTTP_CONF = "http";
+    private static final String KEY_ACCEPTED_TERMS = "accepted_terms";
     private static final Gson g = Utils.getGson();
+
+    public static boolean didAcceptTerms(@NonNull Context c) {
+        return c.getSharedPreferences(PREFS_CONFS, Context.MODE_PRIVATE).getBoolean(KEY_ACCEPTED_TERMS, true);
+    }
+
+    public static void setAcceptedTerms(@NonNull Context c) {
+        SharedPreferences.Editor e = c.getSharedPreferences(PREFS_CONFS, Context.MODE_PRIVATE).edit();
+        e.putBoolean(KEY_ACCEPTED_TERMS, false);
+        e.apply();
+    }
 
     public static void storeNewMqttConfiguration(Context context, MqttConfiguration conf) {
         List<MqttConfiguration> allConfs = loadAllMqttConfigurations(context);

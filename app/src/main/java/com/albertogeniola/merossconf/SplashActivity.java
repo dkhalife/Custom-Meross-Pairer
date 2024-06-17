@@ -1,54 +1,45 @@
 package com.albertogeniola.merossconf;
 
-import android.content.DialogInterface;
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.albertogeniola.merossconf.model.HttpClientManager;
-import com.albertogeniola.merosslib.MerossHttpClient;
 import com.albertogeniola.merosslib.model.http.ApiCredentials;
 import com.google.android.material.button.MaterialButton;
 
 import java.util.logging.ConsoleHandler;
-import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class SplashActivity extends AppCompatActivity {
+@SuppressLint("CustomSplashScreen")
+public class SplashActivity extends Activity {
+    private void gotoMainActivity() {
+        startActivity(new Intent(SplashActivity.this, MainActivity.class));
+        finish();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_splash);
 
-        // Hide UI first
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.hide();
+        if (!AndroidPreferencesManager.didAcceptTerms(getApplicationContext())) {
+            gotoMainActivity();
+            return;
         }
 
+        setContentView(R.layout.activity_splash);
+
         MaterialButton agreeButton = findViewById(R.id.acceptButton);
-        agreeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(SplashActivity.this, MainActivity.class));
-                finish();
-            }
+        agreeButton.setOnClickListener(view -> {
+            AndroidPreferencesManager.setAcceptedTerms(getApplicationContext());
+            gotoMainActivity();
         });
         MaterialButton quitButton = findViewById(R.id.quitButton);
-        quitButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
+        quitButton.setOnClickListener(view -> finish());
 
         hideSystemUI();
     }
@@ -73,19 +64,20 @@ public class SplashActivity extends AppCompatActivity {
         // Load credentials
         HttpClientManager instance = HttpClientManager.getInstance();
         ApiCredentials creds = AndroidPreferencesManager.loadHttpCredentials(this);
-        if (creds != null)
+        if (creds != null) {
             instance.loadFromCredentials(creds);
+        }
     }
 
     private void hideSystemUI() {
-
         // Enables regular immersive mode.
         // For "lean back" mode, remove SYSTEM_UI_FLAG_IMMERSIVE.
         // Or for "sticky immersive," replace it with SYSTEM_UI_FLAG_IMMERSIVE_STICKY
         View decorView = getWindow().getDecorView();
         android.app.ActionBar bar = getActionBar();
-        if (bar!=null)
+        if (bar!=null) {
             bar.setDisplayHomeAsUpEnabled(false);
+        }
 
         decorView.setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
