@@ -4,7 +4,7 @@ take control over your Meross Hardware devices. Well, let me congratulate with y
 exactly what made me start the journey to develop the MerossIot API, Homeassistant component,
 Homeassitant addon and finally the Custom Pairer App.
 
-<img src="https://github.com/albertogeniola/meross_pair/blob/main/docs/logos/Custom%20pairer.png"/>
+<img alt="Custom Pairer App logo" src="https://github.com/albertogeniola/meross_pair/blob/main/docs/logos/Custom%20pairer.png"/>
 
 ## What's this?
 This app, *Custom pairer for Meross Devices* is just a tool that is able to configure Meross 
