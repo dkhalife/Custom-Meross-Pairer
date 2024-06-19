@@ -114,39 +114,30 @@ public class LoginFragment extends Fragment {
         mSearchProgress.setIndeterminate(true);
         mProgressIndicatorDrawable = mSearchProgress.getIndeterminateDrawable();
         // Show/Hide password logic
-        showPasswordCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (mHttpPasswordEditText.getTransformationMethod() == HideReturnsTransformationMethod.getInstance()) {
-                    mHttpPasswordEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
-                } else {
-                    mHttpPasswordEditText.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-                }
+        showPasswordCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (mHttpPasswordEditText.getTransformationMethod() == HideReturnsTransformationMethod.getInstance()) {
+                mHttpPasswordEditText.setTransformationMethod(PasswordTransformationMethod.getInstance());
+            } else {
+                mHttpPasswordEditText.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
             }
         });
 
         // Login button logic
-        mLoginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Make sure wifi is currently enabled and connected.
-                if (mRequiresWifiLocation && !AndroidUtils.isWifiConnected(requireContext())) {
-                    Snackbar.make(requireView(), "Please enable WiFi first.", Snackbar.LENGTH_SHORT).show();
-                } else {
-                    performLogin();
-                }
+        mLoginButton.setOnClickListener(v -> {
+            // Make sure wifi is currently enabled and connected.
+            if (mRequiresWifiLocation && !AndroidUtils.isWifiConnected(requireContext())) {
+                Snackbar.make(requireView(), "Please enable WiFi first.", Snackbar.LENGTH_SHORT).show();
+            } else {
+                performLogin();
             }
         });
 
         // Discovery button logic
-        mDiscoveryButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mRequiresWifiLocation && !AndroidUtils.isWifiConnected(requireContext())) {
-                    Snackbar.make(requireView(), "Please enable WiFi first.", Snackbar.LENGTH_SHORT).show();
-                } else {
-                    startApiDiscovery();
-                }
+        mDiscoveryButton.setOnClickListener(view1 -> {
+            if (mRequiresWifiLocation && !AndroidUtils.isWifiConnected(requireContext())) {
+                Snackbar.make(requireView(), "Please enable WiFi first.", Snackbar.LENGTH_SHORT).show();
+            } else {
+                startApiDiscovery();
             }
         });
 
@@ -203,29 +194,26 @@ public class LoginFragment extends Fragment {
     }
 
     private void configureUi(final boolean uiEnabled, final boolean discoveryInProgress, @Nullable final String hostnameValue, @Nullable final String message) {
-        Runnable logic = new Runnable() {
-            @Override
-            public void run() {
-                mLoginButton.setEnabled(uiEnabled);
-                mDiscoveryButton.setEnabled(uiEnabled);
-                mHttpUsernameEditText.setEnabled(uiEnabled);
-                mHttpPasswordEditText.setEnabled(uiEnabled);
+        Runnable logic = () -> {
+            mLoginButton.setEnabled(uiEnabled);
+            mDiscoveryButton.setEnabled(uiEnabled);
+            mHttpUsernameEditText.setEnabled(uiEnabled);
+            mHttpPasswordEditText.setEnabled(uiEnabled);
 
-                if (discoveryInProgress) {
-                    mHttpHostnameInputLayout.setEndIconMode(TextInputLayout.END_ICON_CUSTOM);
-                    mHttpHostnameInputLayout.setEndIconDrawable(mProgressIndicatorDrawable);
-                } else {
-                    mHttpHostnameInputLayout.setEndIconMode(TextInputLayout.END_ICON_NONE);
-                    mHttpHostnameInputLayout.setEndIconDrawable(null);
-                }
+            if (discoveryInProgress) {
+                mHttpHostnameInputLayout.setEndIconMode(TextInputLayout.END_ICON_CUSTOM);
+                mHttpHostnameInputLayout.setEndIconDrawable(mProgressIndicatorDrawable);
+            } else {
+                mHttpHostnameInputLayout.setEndIconMode(TextInputLayout.END_ICON_NONE);
+                mHttpHostnameInputLayout.setEndIconDrawable(null);
+            }
 
-                if (hostnameValue != null) {
-                    mHttpHostnameEditText.setText(hostnameValue);
-                }
+            if (hostnameValue != null) {
+                mHttpHostnameEditText.setText(hostnameValue);
+            }
 
-                if (message != null) {
-                    Toast.makeText(mAppContext, message, Toast.LENGTH_SHORT).show();
-                }
+            if (message != null) {
+                Toast.makeText(mAppContext, message, Toast.LENGTH_SHORT).show();
             }
         };
 

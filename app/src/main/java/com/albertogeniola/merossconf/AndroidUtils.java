@@ -1,30 +1,18 @@
 package com.albertogeniola.merossconf;
 
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.net.wifi.WifiSsid;
-import android.os.Build;
-import android.provider.Settings;
 import android.util.DisplayMetrics;
 
-import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
 import androidx.core.location.LocationManagerCompat;
-
-import com.albertogeniola.merosslib.model.Cipher;
-import com.albertogeniola.merosslib.model.Encryption;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
-
-import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
 
 public class AndroidUtils {
@@ -66,7 +54,7 @@ public class AndroidUtils {
     }
 
     public static boolean validateBaseUrl(String url) {
-        return Pattern.matches("^(http|https)\\:\\/\\/([\\_\\-a-zA-Z0-9\\.]+)(\\:[0-9]+)?$", url);
+        return Pattern.matches("^(http|https)://([_\\-a-zA-Z0-9.]+)(:[0-9]+)?$", url);
     }
 
     public static int dpToPx(Context ctx, int dp) {

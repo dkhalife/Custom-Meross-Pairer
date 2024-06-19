@@ -67,12 +67,7 @@ public class ShowDeviceInfoFragment extends Fragment {
         discoveredWifiMac = view.findViewById(R.id.discoveredWifiMac);
         Button configureButton = view.findViewById(R.id.configureButton);
 
-        configureButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                launchConfigFragment();
-            }
-        });
+        configureButton.setOnClickListener(v -> launchConfigFragment());
 
         loadUiInfo();
     }

@@ -115,8 +115,8 @@ public class MerossHttpClient implements Serializable {
     private static String toHexString(byte[] bytes) {
         StringBuilder hexString = new StringBuilder();
 
-        for (int i = 0; i < bytes.length; i++) {
-            String hex = Integer.toHexString(0xFF & bytes[i]);
+        for (byte aByte : bytes) {
+            String hex = Integer.toHexString(0xFF & aByte);
             if (hex.length() == 1) {
                 hexString.append('0');
             }

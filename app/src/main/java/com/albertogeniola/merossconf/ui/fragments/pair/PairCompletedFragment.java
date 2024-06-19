@@ -56,13 +56,10 @@ public class PairCompletedFragment extends Fragment {
         mTextView = view.findViewById(R.id.pairing_completed_text_view);
         mQuestionMarkView = view.findViewById(R.id.questionMarkIcon);
         pairDoneButton = view.findViewById(R.id.pairDoneButton);
-        pairDoneButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NavController ctrl = NavHostFragment.findNavController(PairCompletedFragment.this);
-                ctrl.popBackStack(R.id.ScanDeviceFragment, false);
-                //ctrl.navigate(R.id.PairDone);
-            }
+        pairDoneButton.setOnClickListener(v -> {
+            NavController ctrl = NavHostFragment.findNavController(PairCompletedFragment.this);
+            ctrl.popBackStack(R.id.ScanDeviceFragment, false);
+            //ctrl.navigate(R.id.PairDone);
         });
 
         mCheckView = view.findViewById(R.id.pairDoneCheckView);
@@ -74,12 +71,7 @@ public class PairCompletedFragment extends Fragment {
             mTimer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    mHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            mCheckView.check();
-                        }
-                    });
+                    mHandler.post(() -> mCheckView.check());
                 }
             }, 1000);
         }

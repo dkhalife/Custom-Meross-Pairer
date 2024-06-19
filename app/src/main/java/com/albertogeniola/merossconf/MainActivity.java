@@ -77,19 +77,16 @@ public class MainActivity extends AppCompatActivity {
         final TextView httpEndpointTextView = navigationView.getHeaderView(0).findViewById(R.id.navigation_header_http_endpoint_textview);
 
         final MainActivityViewModel mainActivityViewModel = new ViewModelProvider(this).get(MainActivityViewModel.class);
-        mainActivityViewModel.getCredentials().observe(this, new Observer<ApiCredentials>() {
-            @Override
-            public void onChanged(ApiCredentials apiCredentials) {
-                if (apiCredentials==null) {
-                    loggedUserTextView.setText("User: not logged");
-                    httpEndpointTextView.setText("API Server: not specified");
-                } else if (apiCredentials.isManuallySet()) {
-                    loggedUserTextView.setText("UserId: " + apiCredentials.getUserId() + " (manual)");
-                    httpEndpointTextView.setText("API Server: not specified");
-                } else {
-                    loggedUserTextView.setText(apiCredentials.getUserEmail());
-                    httpEndpointTextView.setText(apiCredentials.getApiServer());
-                }
+        mainActivityViewModel.getCredentials().observe(this, apiCredentials -> {
+            if (apiCredentials==null) {
+                loggedUserTextView.setText("User: not logged");
+                httpEndpointTextView.setText("API Server: not specified");
+            } else if (apiCredentials.isManuallySet()) {
+                loggedUserTextView.setText("UserId: " + apiCredentials.getUserId() + " (manual)");
+                httpEndpointTextView.setText("API Server: not specified");
+            } else {
+                loggedUserTextView.setText(apiCredentials.getUserEmail());
+                httpEndpointTextView.setText(apiCredentials.getApiServer());
             }
         });
 
@@ -115,13 +112,10 @@ public class MainActivity extends AppCompatActivity {
         mainActivityViewModel.setCredentials(AndroidPreferencesManager.loadHttpCredentials(this));
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-                ApiCredentials creds = AndroidPreferencesManager.loadHttpCredentials(MainActivity.this);
-                NavigationUI.onNavDestinationSelected(menuItem, navController);
-                return true;
-            }
+        navigationView.setNavigationItemSelectedListener(menuItem -> {
+            ApiCredentials creds = AndroidPreferencesManager.loadHttpCredentials(MainActivity.this);
+            NavigationUI.onNavDestinationSelected(menuItem, navController);
+            return true;
         });
     }
 

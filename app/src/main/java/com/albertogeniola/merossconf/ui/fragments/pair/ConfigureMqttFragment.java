@@ -99,18 +99,10 @@ public class ConfigureMqttFragment extends Fragment {
         if (mDiscoveredConfig != null) {
             adapter.add(mDiscoveredConfig);
         }
-        saveCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                mqttConfigurationNameEditText.setVisibility(isChecked ? View.VISIBLE : View.GONE);
-            }
-        });
-        overrideMqttParamsCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                customMqttUserId.setVisibility(isChecked ? View.VISIBLE:View.GONE);
-                customMqttKey.setVisibility(isChecked ? View.VISIBLE:View.GONE);
-            }
+        saveCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> mqttConfigurationNameEditText.setVisibility(isChecked ? View.VISIBLE : View.GONE));
+        overrideMqttParamsCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            customMqttUserId.setVisibility(isChecked ? View.VISIBLE:View.GONE);
+            customMqttKey.setVisibility(isChecked ? View.VISIBLE:View.GONE);
         });
         mqttConfigurationSpinner.setAdapter(adapter);
 
@@ -145,77 +137,74 @@ public class ConfigureMqttFragment extends Fragment {
 
         mqttConfigurationSpinner.setSelection(adapter.getCount()-1, true);
 
-        pairButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // New item validation
-                MqttConfiguration tmpConf = new MqttConfiguration();
-                boolean save = saveCheckbox.isChecked();
-                boolean error = false;
-                if (mqttConfigurationSpinner.getSelectedItem() == newMqttConfig) {
-                    // make sure the host is populated
-                    String hostnameStr = mqttHostEditText.getEditText().getText().toString();
-                    if (hostnameStr.isEmpty()) {
-                        error = true;
-                        mqttHostEditText.setError("Invalid mqtt host");
-                    } else {
-                        mqttHostEditText.setError(null);
-                        tmpConf.setHostname(hostnameStr);
-                    }
-
-                    // make sure the port is populated
-                    try {
-                        String portstr = mqttPortEditText.getEditText().getText().toString();
-                        int port = Integer.parseInt(portstr);
-                        if (port<1 || port > 65535)
-                            throw new NumberFormatException();
-                        mqttPortEditText.setError(null);
-                        tmpConf.setPort(port);
-
-                    } catch (NumberFormatException e) {
-                        error = true;
-                        mqttPortEditText.setError("The MQTT port is invalid");
-                    }
-
-                    // Make sure the name is populated
-                    String name = mqttConfigurationNameEditText.getEditText().getText().toString();
-                    if (save && (name.isEmpty() || name.trim().toLowerCase().compareTo("add new...")==0)) {
-                        error = true;
-                        mqttConfigurationNameEditText.setError("Invalid name");
-                    } else {
-                        mqttConfigurationNameEditText.setError(null);
-                        tmpConf.setName(name);
-                    }
-
-                    // Abort on validation error
-                    if (error) {
-                        return;
-                    }
-
-                    if (save) {
-                        AndroidPreferencesManager.storeNewMqttConfiguration(getContext(), tmpConf);
-                        adapter.insert(tmpConf,0);
-                        adapter.notifyDataSetChanged();
-                        mqttConfigurationSpinner.setSelection(0);
-                    }
-
-                    pairActivityViewModel.setTargetMqttConfig(tmpConf);
+        pairButton.setOnClickListener(v -> {
+            // New item validation
+            MqttConfiguration tmpConf = new MqttConfiguration();
+            boolean save = saveCheckbox.isChecked();
+            boolean error = false;
+            if (mqttConfigurationSpinner.getSelectedItem() == newMqttConfig) {
+                // make sure the host is populated
+                String hostnameStr = mqttHostEditText.getEditText().getText().toString();
+                if (hostnameStr.isEmpty()) {
+                    error = true;
+                    mqttHostEditText.setError("Invalid mqtt host");
                 } else {
-                    MqttConfiguration tmp = (MqttConfiguration) mqttConfigurationSpinner.getSelectedItem();
-                    pairActivityViewModel.setTargetMqttConfig(tmp);
+                    mqttHostEditText.setError(null);
+                    tmpConf.setHostname(hostnameStr);
                 }
 
-                if (overrideMqttParamsCheckbox.isChecked()) {
-                    pairActivityViewModel.setOverrideKey(customMqttKey.getEditText().toString());
-                    pairActivityViewModel.setOverrideUserId(customMqttUserId.getEditText().toString());
-                } else {
-                    pairActivityViewModel.setOverrideKey(null);
-                    pairActivityViewModel.setOverrideUserId(null);
+                // make sure the port is populated
+                try {
+                    String portstr = mqttPortEditText.getEditText().getText().toString();
+                    int port = Integer.parseInt(portstr);
+                    if (port<1 || port > 65535)
+                        throw new NumberFormatException();
+                    mqttPortEditText.setError(null);
+                    tmpConf.setPort(port);
+
+                } catch (NumberFormatException e) {
+                    error = true;
+                    mqttPortEditText.setError("The MQTT port is invalid");
                 }
 
-                NavController ctrl = NavHostFragment.findNavController(ConfigureMqttFragment.this);
-                ctrl.navigate(R.id.action_configureMqtt_to_executePair, null, new NavOptions.Builder().setEnterAnim(android.R.animator.fade_in).setExitAnim(android.R.animator.fade_out).build());
+                // Make sure the name is populated
+                String name = mqttConfigurationNameEditText.getEditText().getText().toString();
+                if (save && (name.isEmpty() || name.trim().toLowerCase().compareTo("add new...")==0)) {
+                    error = true;
+                    mqttConfigurationNameEditText.setError("Invalid name");
+                } else {
+                    mqttConfigurationNameEditText.setError(null);
+                    tmpConf.setName(name);
+                }
+
+                // Abort on validation error
+                if (error) {
+                    return;
+                }
+
+                if (save) {
+                    AndroidPreferencesManager.storeNewMqttConfiguration(getContext(), tmpConf);
+                    adapter.insert(tmpConf,0);
+                    adapter.notifyDataSetChanged();
+                    mqttConfigurationSpinner.setSelection(0);
+                }
+
+                pairActivityViewModel.setTargetMqttConfig(tmpConf);
+            } else {
+                MqttConfiguration tmp = (MqttConfiguration) mqttConfigurationSpinner.getSelectedItem();
+                pairActivityViewModel.setTargetMqttConfig(tmp);
             }
+
+            if (overrideMqttParamsCheckbox.isChecked()) {
+                pairActivityViewModel.setOverrideKey(customMqttKey.getEditText().toString());
+                pairActivityViewModel.setOverrideUserId(customMqttUserId.getEditText().toString());
+            } else {
+                pairActivityViewModel.setOverrideKey(null);
+                pairActivityViewModel.setOverrideUserId(null);
+            }
+
+            NavController ctrl = NavHostFragment.findNavController(ConfigureMqttFragment.this);
+            ctrl.navigate(R.id.action_configureMqtt_to_executePair, null, new NavOptions.Builder().setEnterAnim(android.R.animator.fade_in).setExitAnim(android.R.animator.fade_out).build());
         });
     }
 }

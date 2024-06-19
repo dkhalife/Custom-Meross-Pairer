@@ -42,7 +42,7 @@ public class DeviceListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mAdapter = new DeviceRecyclerViewAdapter(new ArrayList<DeviceInfo>());
+        mAdapter = new DeviceRecyclerViewAdapter(new ArrayList<>());
     }
 
     @Override
@@ -99,10 +99,5 @@ public class DeviceListFragment extends Fragment {
         });
     }
 
-    private final View.OnClickListener refreshButtonClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            updateData();
-        }
-    };
+    private final View.OnClickListener refreshButtonClickListener = v -> updateData();
 }
