@@ -56,14 +56,14 @@ public class MainActivity extends AppCompatActivity {
         final NavigationView navigationView = findViewById(R.id.nav_view);
         mPairMenuItem = navigationView.getMenu().findItem(R.id.pair_activity);
         mDeviceMenuItem = navigationView.getMenu().findItem(R.id.devices_fragment);
+        TextView versionInfo = (TextView)navigationView.getHeaderView(0).findViewById(R.id.appVersionTextView);
         try {
             PackageInfo pInfo = getPackageManager().getPackageInfo(this.getPackageName(), 0);
             String version = pInfo.versionName;
-            ((TextView)navigationView.getHeaderView(0).findViewById(R.id.appVersionTextView)).setText("v"+version);
+            versionInfo.setText("v"+version);
         } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
+            versionInfo.setText("");
         }
-
 
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
@@ -78,11 +78,11 @@ public class MainActivity extends AppCompatActivity {
         final MainActivityViewModel mainActivityViewModel = new ViewModelProvider(this).get(MainActivityViewModel.class);
         mainActivityViewModel.getCredentials().observe(this, apiCredentials -> {
             if (apiCredentials==null) {
-                loggedUserTextView.setText("User: not logged");
-                httpEndpointTextView.setText("API Server: not specified");
+                loggedUserTextView.setText(R.string.user_not_logged);
+                httpEndpointTextView.setText(R.string.api_server_not_specified);
             } else if (apiCredentials.isManuallySet()) {
                 loggedUserTextView.setText("UserId: " + apiCredentials.getUserId() + " (manual)");
-                httpEndpointTextView.setText("API Server: not specified");
+                httpEndpointTextView.setText(R.string.api_server_not_specified);
             } else {
                 loggedUserTextView.setText(apiCredentials.getUserEmail());
                 httpEndpointTextView.setText(apiCredentials.getApiServer());

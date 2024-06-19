@@ -110,10 +110,10 @@ public class ExecutePairingFragment extends Fragment {
     private void connectToDeviceWifiAp() {
         state = State.CONNECTING_DEVICE_WIFI_AP;
 
-        String ssid = pairActivityViewModel.getMerossPairingAp().getValue().getSsid();
+        /*String ssid = pairActivityViewModel.getMerossPairingAp().getValue().getSsid();
         String bssid = pairActivityViewModel.getMerossPairingAp().getValue().getBssid();
 
-        /*try {
+        try {
             startWifiConnection(ssid, bssid,null, null, 15000);
             // Flow starts again from onWifiConnected() / onWifiUnavailable()
         } catch (PermissionNotGrantedException e) {
@@ -177,13 +177,10 @@ public class ExecutePairingFragment extends Fragment {
                             Log.i(TAG, "Device " + targetUuid + " is paired, but not ready yet or in an unknown status.");
                         }
                     } catch (HttpApiException e) {
-                        e.printStackTrace();
                         Log.e(TAG, "The HTTP API server reported status " + e.getCode(), e);
                     } catch (IOException e) {
-                        e.printStackTrace();
                         Log.e(TAG, "An IOException occurred while polling the HTTP API server.", e);
                     } catch (Exception e) {
-                        e.printStackTrace();
                         Log.e(TAG, "An unexpected exception occurred", e);
                     } finally {
                         timedOut = GregorianCalendar.getInstance().getTimeInMillis() >= timeout;
@@ -191,7 +188,6 @@ public class ExecutePairingFragment extends Fragment {
                         try {
                             Thread.sleep(1000);
                         } catch (InterruptedException e) {
-                            e.printStackTrace();
                             exitNow = true;
                             error = "An error occurred while poling the HTTP API server";
                             stateMachine(Signal.ERROR);
@@ -228,7 +224,6 @@ public class ExecutePairingFragment extends Fragment {
                                 key,
                                 userId);
             } catch (IOException e) {
-                e.printStackTrace();
                 uiThreadHandler.post(() -> {
                     error = "Error occurred while configuring device MQTT server";
                     stateMachine(Signal.ERROR);
@@ -241,7 +236,6 @@ public class ExecutePairingFragment extends Fragment {
                 mApDevice.setConfigWifi(credentials.getScannedWifi(), credentials.getWifiPasswordBase64());
                 stateMachine(Signal.DEVICE_CONFIGURED);
             } catch (IOException e) {
-                e.printStackTrace();
                 uiThreadHandler.post(() -> {
                     error = "Error occurred while configuring device WIFI connection";
                     stateMachine(Signal.ERROR);

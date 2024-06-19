@@ -53,25 +53,25 @@ public class AccountFragment extends Fragment {
             }
 
             if (apiCredentials == null || Strings.isEmpty(apiCredentials.getApiServer())) {
-                httpUrlEditText.setText("Not set");
+                httpUrlEditText.setText(R.string.not_set);
             } else {
                 httpUrlEditText.setText(apiCredentials.getApiServer());
             }
 
             if (apiCredentials == null || Strings.isEmpty(apiCredentials.getUserId())) {
-                userIdEditText.setText("Not set");
+                userIdEditText.setText(R.string.not_set);
             } else {
                 userIdEditText.setText(apiCredentials.getUserId());
             }
 
             if (apiCredentials == null || Strings.isEmpty(apiCredentials.getToken())) {
-                httpTokenEditText.setText("Not set");
+                httpTokenEditText.setText(R.string.not_set);
             } else {
                 httpTokenEditText.setText(apiCredentials.getToken());
             }
 
             if (apiCredentials == null || Strings.isEmpty(apiCredentials.getKey())) {
-                mqttKeyEditText.setText("Not set (empty string)");
+                mqttKeyEditText.setText(R.string.not_set);
             } else {
                 mqttKeyEditText.setText(apiCredentials.getKey());
             }
@@ -79,7 +79,7 @@ public class AccountFragment extends Fragment {
             if (apiCredentials != null && apiCredentials.isManuallySet()) {
                 httpLogoutButton.setText("Discard");
             } else {
-                httpLogoutButton.setText("Logout");
+                httpLogoutButton.setText(R.string.logout);
             }
 
             httpLogoutButton.setEnabled(apiCredentials != null);

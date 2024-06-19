@@ -366,7 +366,7 @@ public class ConfigureWifiFragment extends Fragment {
 
             wifiName.setText(value.getSsid());
             bssid.setText(value.getBssid());
-            channel.setText("" + value.getChannel());
+            channel.setText(value.getChannel());
             signal.setIndeterminate(false);
             signal.setProgress((int)quality);
 

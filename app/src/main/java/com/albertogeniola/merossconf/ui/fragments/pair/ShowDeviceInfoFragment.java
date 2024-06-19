@@ -82,15 +82,18 @@ public class ShowDeviceInfoFragment extends Fragment {
             GetSystemAllPayloadAllHardrware hwinfo = deviceInfo.getPayload().getAll().getSystem().getHardware();
             GetSystemAllPayloadAllFirmware fwinfo = deviceInfo.getPayload().getAll().getSystem().getFirmware();
 
+            String userId = fwinfo.getUserId() == 0 ? "N/A" : String.valueOf(fwinfo.getUserId());
+            String port = fwinfo.getPort() == 0 ? "N/A" : String.valueOf(fwinfo.getPort());
+
             discoveredType.setText(hwinfo.getType());
             discoveredVersion.setText(hwinfo.getVersion());
             discoveredChip.setText(hwinfo.getChipType());
             discoveredMAC.setText(hwinfo.getMacAddress());
             discoveredUUID.setText(hwinfo.getUuid());
-            discoveredUserID.setText("" + (fwinfo.getUserId() == 0 ? "N/A" : fwinfo.getUserId()));
+            discoveredUserID.setText(userId);
             discoveredFWVer.setText(fwinfo.getVersion());
             discoveredMQTTServer.setText(fwinfo.getServer().isEmpty() ? "N/A" : fwinfo.getServer());
-            discoveredMQTTServerPort.setText("" + (fwinfo.getPort() == 0 ? "N/A" : fwinfo.getPort()));
+            discoveredMQTTServerPort.setText(port);
             discoveredInnerIP.setText(fwinfo.getInnerIp().compareTo("0.0.0.0")==0 ? "N/A" : fwinfo.getInnerIp());
             discoveredWifiMac.setText(fwinfo.getWifiMac());
         }
