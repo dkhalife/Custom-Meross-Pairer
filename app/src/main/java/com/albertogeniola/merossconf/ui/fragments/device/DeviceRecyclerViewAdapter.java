@@ -30,11 +30,14 @@ public class DeviceRecyclerViewAdapter extends RecyclerView.Adapter<DeviceRecycl
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+
         return new ViewHolder(FragmentDeviceInfoBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
+
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
+        holder.mItem = mValues.get(position);
         holder.mDeviceUuid.setText(mValues.get(position).getUuid());
         holder.mDeviceName.setText(mValues.get(position).getDevName());
         holder.deviceClass.setText(mValues.get(position).getDeviceType());
@@ -51,6 +54,7 @@ public class DeviceRecyclerViewAdapter extends RecyclerView.Adapter<DeviceRecycl
         public final TextView mDeviceName;
         public final TextView deviceClass;
         public final TextView mDeviceOnline;
+        public DeviceInfo mItem;
 
         public ViewHolder(FragmentDeviceInfoBinding binding) {
             super(binding.getRoot());
