@@ -1,6 +1,5 @@
 package com.albertogeniola.merossconf.ui.fragments.pair;
 
-import android.net.MacAddress;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -12,6 +11,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -22,7 +22,6 @@ import com.albertogeniola.merossconf.AndroidPreferencesManager;
 import com.albertogeniola.merossconf.Constants;
 import com.albertogeniola.merossconf.R;
 import com.albertogeniola.merossconf.model.MqttConfiguration;
-import com.albertogeniola.merossconf.model.exception.PermissionNotGrantedException;
 import com.albertogeniola.merossconf.ui.PairActivityViewModel;
 import com.albertogeniola.merossconf.ui.views.TaskLine;
 import com.albertogeniola.merosslib.MerossDeviceAp;
@@ -42,7 +41,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 
-public class ExecutePairingFragment extends AbstractWifiFragment {
+public class ExecutePairingFragment extends Fragment {
     private static final String TAG = "PairingFragment";
     private static final int WIFI_CONNECT_DELAY = 5000;
 
@@ -114,14 +113,14 @@ public class ExecutePairingFragment extends AbstractWifiFragment {
         String ssid = pairActivityViewModel.getMerossPairingAp().getValue().getSsid();
         String bssid = pairActivityViewModel.getMerossPairingAp().getValue().getBssid();
 
-        try {
+        /*try {
             startWifiConnection(ssid, bssid,null, null, 15000);
             // Flow starts again from onWifiConnected() / onWifiUnavailable()
         } catch (PermissionNotGrantedException e) {
             Log.e(TAG, "Missing wifi permissions");
             // DO nothing, as the parent fragment will ask for permissions already.
             // Flow starts back from onWifiPermissionsGranted()
-        }
+        }*/
     }
 
     private void connectToLocalWifi() {
@@ -133,14 +132,14 @@ public class ExecutePairingFragment extends AbstractWifiFragment {
 
         // Check if we are already connected to such wifi
         // TODO: Check comparison happens with double quotes
-        try {
+        /*try {
             startWifiConnection(ssid, bssid, passphrase, null, 60000);
             // Flow starts again from onWifiConnected() / onWifiUnavailable()
         } catch (PermissionNotGrantedException e) {
             Log.e(TAG, "Missing wifi permissions");
             // Do nothing, as the parent fragment will ask for permissions already.
             // Flow starts back from onWifiPermissionsGranted()
-        }
+        }*/
     }
 
     private void pollDeviceList() {
@@ -357,7 +356,7 @@ public class ExecutePairingFragment extends AbstractWifiFragment {
         pairActivityViewModel = new ViewModelProvider(requireActivity()).get(PairActivityViewModel.class);
     }
 
-    @Override
+    /*@Override
     protected void onWifiConnected(final String ssid) {
         uiThreadHandler.postDelayed(new Runnable() {
             @Override
@@ -377,9 +376,9 @@ public class ExecutePairingFragment extends AbstractWifiFragment {
     protected void onWifiUnavailable(String ssid) {
         error = "Failed to connect to " + ssid;
         stateMachine(Signal.ERROR);
-    }
+    }*/
 
-    @Override
+    /*@Override
     protected void onMissingWifiPermissions(String ssid) {
         error = "You must provide Wifi and Location access to this app to complete the operation.";
         stateMachine(Signal.ERROR);
@@ -395,7 +394,7 @@ public class ExecutePairingFragment extends AbstractWifiFragment {
         } else if (ssid.compareTo(localSsid) == 0) {
             connectToLocalWifi();
         }
-    }
+    }*/
 
     @Override
     public View onCreateView(

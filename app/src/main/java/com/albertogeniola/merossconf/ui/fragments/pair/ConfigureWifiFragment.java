@@ -1,7 +1,6 @@
 package com.albertogeniola.merossconf.ui.fragments.pair;
 
 import android.content.Context;
-import android.net.MacAddress;
 import android.net.nsd.NsdManager;
 import android.net.nsd.NsdServiceInfo;
 import android.os.Bundle;
@@ -25,6 +24,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.NavOptions;
@@ -35,7 +35,6 @@ import com.albertogeniola.merossconf.Constants;
 import com.albertogeniola.merossconf.MerossUtils;
 import com.albertogeniola.merossconf.R;
 import com.albertogeniola.merossconf.model.WifiConfiguration;
-import com.albertogeniola.merossconf.model.exception.PermissionNotGrantedException;
 import com.albertogeniola.merossconf.ui.PairActivityViewModel;
 import com.albertogeniola.merosslib.model.Encryption;
 import com.albertogeniola.merosslib.model.protocol.payloads.GetConfigWifiListEntry;
@@ -47,10 +46,8 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import lombok.SneakyThrows;
 
-
-public class ConfigureWifiFragment extends AbstractWifiFragment {
+public class ConfigureWifiFragment extends Fragment {
     private static final String TAG = "ConfigureWifiFragment";
     private NsdManager mNsdManager;
     private static final String SERVICE_TYPE = "_meross-mqtt._tcp.";
@@ -160,7 +157,7 @@ public class ConfigureWifiFragment extends AbstractWifiFragment {
         mResolveInProgress = false;
     }
 
-    @Override
+    /*@Override
     protected void onWifiConnected(String ssid) {
         // If the wifi connection succeeds, store the wifi info into the parent model
         mUiHandler.postDelayed(new Runnable() {
@@ -186,7 +183,7 @@ public class ConfigureWifiFragment extends AbstractWifiFragment {
             Log.i(TAG, "Wifi connected, issuing discovery.");
             startApiDiscovery();
         }
-    }
+    }*/
 
     private void startApiDiscovery() {
         // Setup UI
@@ -204,7 +201,7 @@ public class ConfigureWifiFragment extends AbstractWifiFragment {
         }
     }
 
-    @Override
+   /* @Override
     protected void onWifiUnavailable(String ssid) {
         configureUi(true, VALIDATE_AND_PROCEED, "Wifi validation failed. Please double check credentials and try again.");
     }
@@ -218,7 +215,7 @@ public class ConfigureWifiFragment extends AbstractWifiFragment {
     @Override
     protected void onWifiPermissionsGranted(String ssid, @Nullable String bssid) {
         startWifiConnection(ssid, bssid, mSelectedWifi.getClearWifiPassword(), null, 60000);
-    }
+    }*/
 
     @UiThread
     private void configureUi(final Boolean uiEnabled,
@@ -331,12 +328,12 @@ public class ConfigureWifiFragment extends AbstractWifiFragment {
         configureUi(false, "Connecting to wifi...", null);
 
         // Start wifi connection
-        try {
-            startWifiConnection(mSelectedWifi.getScannedWifi().getSsid(), mSelectedWifi.getScannedWifi().getBssid(), mSelectedWifi.getClearWifiPassword(), null, 20000);
+        /*try {
+            //startWifiConnection(mSelectedWifi.getScannedWifi().getSsid(), mSelectedWifi.getScannedWifi().getBssid(), mSelectedWifi.getClearWifiPassword(), null, 20000);
             // The flow starts back from on onWifiConnected / onWifiUnavailable().
         } catch (PermissionNotGrantedException e) {
             // The flow starts back from onWifiPermissionsGranted()
-        }
+        }*/
     }
 
     public class WifiSpinnerAdapter extends ArrayAdapter<GetConfigWifiListEntry> {
