@@ -25,11 +25,8 @@ import cdflynn.android.library.checkview.CheckView;
 
 public class PairCompletedFragment extends Fragment {
     private CheckView mCheckView;
-    private TextView mTextView;
-    private ImageView mQuestionMarkView;
     private final Timer mTimer;
     private final Handler mHandler;
-    private Button pairDoneButton;
     private boolean mVerified;
 
     public PairCompletedFragment() {
@@ -53,9 +50,9 @@ public class PairCompletedFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mTextView = view.findViewById(R.id.pairing_completed_text_view);
-        mQuestionMarkView = view.findViewById(R.id.questionMarkIcon);
-        pairDoneButton = view.findViewById(R.id.pairDoneButton);
+        TextView mTextView = view.findViewById(R.id.pairing_completed_text_view);
+        ImageView mQuestionMarkView = view.findViewById(R.id.questionMarkIcon);
+        Button pairDoneButton = view.findViewById(R.id.pairDoneButton);
         pairDoneButton.setOnClickListener(v -> {
             NavController ctrl = NavHostFragment.findNavController(PairCompletedFragment.this);
             ctrl.popBackStack(R.id.ScanDeviceFragment, false);

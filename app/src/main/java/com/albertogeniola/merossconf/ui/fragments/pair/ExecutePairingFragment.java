@@ -38,7 +38,6 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 
@@ -202,16 +201,13 @@ public class ExecutePairingFragment extends Fragment {
 
                 final boolean finalSucceed = succeed;
                 final boolean finalTimedOut = timedOut;
-                uiThreadHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (finalSucceed)
-                            stateMachine(Signal.DEVICE_PAIRED);
-                        else if (finalTimedOut)
-                            stateMachine(Signal.MISSING_CONFIRMATION);
-                        else
-                            stateMachine(Signal.ERROR);
-                    }
+                uiThreadHandler.post(() -> {
+                    if (finalSucceed)
+                        stateMachine(Signal.DEVICE_PAIRED);
+                    else if (finalTimedOut)
+                        stateMachine(Signal.MISSING_CONFIRMATION);
+                    else
+                        stateMachine(Signal.ERROR);
                 });
             }
         }, 2, TimeUnit.SECONDS);
@@ -223,58 +219,46 @@ public class ExecutePairingFragment extends Fragment {
         final String userId = pairActivityViewModel.getOverridedUserId().getValue() != null ? pairActivityViewModel.getOverridedUserId().getValue() : mCreds.getUserId();
         final String key = pairActivityViewModel.getOverridedKey().getValue() != null ? pairActivityViewModel.getOverridedKey().getValue() : mCreds.getKey();
 
-        worker.schedule(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    LiveData<MqttConfiguration> mqttConfig = pairActivityViewModel.getTargetMqttConfig();
-                    mApDevice.setConfigKey(
-                            mqttConfig.getValue().getHostname(),
-                            mqttConfig.getValue().getPort(),
-                                    key,
-                                    userId);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    uiThreadHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            error = "Error occurred while configuring device MQTT server";
-                            stateMachine(Signal.ERROR);
-                        }
-                    });
-                    return;
-                }
-
-                com.albertogeniola.merossconf.model.WifiConfiguration credentials = pairActivityViewModel.getMerossConfiguredWifi().getValue();
-                try {
-                    mApDevice.setConfigWifi(credentials.getScannedWifi(), credentials.getWifiPasswordBase64());
-                    stateMachine(Signal.DEVICE_CONFIGURED);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    uiThreadHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            error = "Error occurred while configuring device WIFI connection";
-                            stateMachine(Signal.ERROR);
-                        }
-                    });
-                }
-
+        worker.schedule(() -> {
+            try {
+                LiveData<MqttConfiguration> mqttConfig = pairActivityViewModel.getTargetMqttConfig();
+                mApDevice.setConfigKey(
+                        mqttConfig.getValue().getHostname(),
+                        mqttConfig.getValue().getPort(),
+                                key,
+                                userId);
+            } catch (IOException e) {
+                e.printStackTrace();
+                uiThreadHandler.post(() -> {
+                    error = "Error occurred while configuring device MQTT server";
+                    stateMachine(Signal.ERROR);
+                });
+                return;
             }
+
+            com.albertogeniola.merossconf.model.WifiConfiguration credentials = pairActivityViewModel.getMerossConfiguredWifi().getValue();
+            try {
+                mApDevice.setConfigWifi(credentials.getScannedWifi(), credentials.getWifiPasswordBase64());
+                stateMachine(Signal.DEVICE_CONFIGURED);
+            } catch (IOException e) {
+                e.printStackTrace();
+                uiThreadHandler.post(() -> {
+                    error = "Error occurred while configuring device WIFI connection";
+                    stateMachine(Signal.ERROR);
+                });
+            }
+
         },3, TimeUnit.SECONDS);
     }
 
     private void completeActivityFragment(final boolean verified) {
-        Runnable uiUpdater = new Runnable() {
-            @Override
-            public void run() {
-                state = State.DONE;
-                updateUi();
-                NavController ctrl = NavHostFragment.findNavController(ExecutePairingFragment.this);
-                Bundle args = new Bundle();
-                args.putBoolean("verified", verified);
-                ctrl.navigate(R.id.action_executePair_to_pairCompleted, args, new NavOptions.Builder().setEnterAnim(android.R.animator.fade_in).setExitAnim(android.R.animator.fade_out).build());
-            }
+        Runnable uiUpdater = () -> {
+            state = State.DONE;
+            updateUi();
+            NavController ctrl = NavHostFragment.findNavController(ExecutePairingFragment.this);
+            Bundle args = new Bundle();
+            args.putBoolean("verified", verified);
+            ctrl.navigate(R.id.action_executePair_to_pairCompleted, args, new NavOptions.Builder().setEnterAnim(android.R.animator.fade_in).setExitAnim(android.R.animator.fade_out).build());
         };
 
         if (Looper.getMainLooper().getThread().getId() != Thread.currentThread().getId()) {
@@ -286,59 +270,56 @@ public class ExecutePairingFragment extends Fragment {
 
     // UI
     private void updateUi() {
-        Runnable uiUpdater = new Runnable() {
-            @Override
-            public void run() {
-                switch (state) {
-                    case INIT:
-                        errorDetailsTextView.setText("");
-                        errorDetailsTextView.setVisibility(View.GONE);
-                        connectWifiTaskLine.setState(TaskLine.TaskState.not_started);
-                        sendPairCommandTaskLine.setState(TaskLine.TaskState.not_started);
-                        connectLocalWifiTaskLine.setState(TaskLine.TaskState.not_started);
-                        checkOnlineTaskLine.setState(TaskLine.TaskState.not_started);
-                        currentTask = null;
-                        break;
-                    case CONNECTING_DEVICE_WIFI_AP:
-                        errorDetailsTextView.setVisibility(View.GONE);
-                        connectWifiTaskLine.setState(TaskLine.TaskState.running);
-                        currentTask = connectWifiTaskLine;
-                        break;
-                    case SENDING_PAIRING_COMMAND:
-                        errorDetailsTextView.setVisibility(View.GONE);
-                        connectWifiTaskLine.setState(TaskLine.TaskState.completed);
-                        sendPairCommandTaskLine.setState(TaskLine.TaskState.running);
-                        currentTask = sendPairCommandTaskLine;
-                        break;
-                    case CONNETING_LOCAL_WIFI:
-                        errorDetailsTextView.setVisibility(View.GONE);
-                        sendPairCommandTaskLine.setState(TaskLine.TaskState.completed);
-                        connectLocalWifiTaskLine.setState(TaskLine.TaskState.running);
-                        currentTask = connectLocalWifiTaskLine;
-                        break;
-                    case VERIFYING_PAIRING_SUCCEEDED:
-                        errorDetailsTextView.setVisibility(View.GONE);
-                        connectLocalWifiTaskLine.setState(TaskLine.TaskState.completed);
-                        checkOnlineTaskLine.setState(TaskLine.TaskState.running);
-                        currentTask = checkOnlineTaskLine;
-                        break;
-                    case DONE:
-                        if (connectLocalWifiTaskLine.getState() == TaskLine.TaskState.not_started)
-                            connectLocalWifiTaskLine.setState(TaskLine.TaskState.skipped);
-                        if (checkOnlineTaskLine.getState() == TaskLine.TaskState.not_started)
-                            checkOnlineTaskLine.setState(TaskLine.TaskState.skipped);
-                        errorDetailsTextView.setVisibility(View.GONE);
-                        checkOnlineTaskLine.setState(TaskLine.TaskState.completed);
-                        currentTask = null;
-                        break;
-                    case ERROR:
-                        errorDetailsTextView.setText(error);
-                        errorDetailsTextView.setVisibility(View.VISIBLE);
-                        if (currentTask != null) {
-                            currentTask.setState(TaskLine.TaskState.failed);
-                        }
-                        break;
-                }
+        Runnable uiUpdater = () -> {
+            switch (state) {
+                case INIT:
+                    errorDetailsTextView.setText("");
+                    errorDetailsTextView.setVisibility(View.GONE);
+                    connectWifiTaskLine.setState(TaskLine.TaskState.not_started);
+                    sendPairCommandTaskLine.setState(TaskLine.TaskState.not_started);
+                    connectLocalWifiTaskLine.setState(TaskLine.TaskState.not_started);
+                    checkOnlineTaskLine.setState(TaskLine.TaskState.not_started);
+                    currentTask = null;
+                    break;
+                case CONNECTING_DEVICE_WIFI_AP:
+                    errorDetailsTextView.setVisibility(View.GONE);
+                    connectWifiTaskLine.setState(TaskLine.TaskState.running);
+                    currentTask = connectWifiTaskLine;
+                    break;
+                case SENDING_PAIRING_COMMAND:
+                    errorDetailsTextView.setVisibility(View.GONE);
+                    connectWifiTaskLine.setState(TaskLine.TaskState.completed);
+                    sendPairCommandTaskLine.setState(TaskLine.TaskState.running);
+                    currentTask = sendPairCommandTaskLine;
+                    break;
+                case CONNETING_LOCAL_WIFI:
+                    errorDetailsTextView.setVisibility(View.GONE);
+                    sendPairCommandTaskLine.setState(TaskLine.TaskState.completed);
+                    connectLocalWifiTaskLine.setState(TaskLine.TaskState.running);
+                    currentTask = connectLocalWifiTaskLine;
+                    break;
+                case VERIFYING_PAIRING_SUCCEEDED:
+                    errorDetailsTextView.setVisibility(View.GONE);
+                    connectLocalWifiTaskLine.setState(TaskLine.TaskState.completed);
+                    checkOnlineTaskLine.setState(TaskLine.TaskState.running);
+                    currentTask = checkOnlineTaskLine;
+                    break;
+                case DONE:
+                    if (connectLocalWifiTaskLine.getState() == TaskLine.TaskState.not_started)
+                        connectLocalWifiTaskLine.setState(TaskLine.TaskState.skipped);
+                    if (checkOnlineTaskLine.getState() == TaskLine.TaskState.not_started)
+                        checkOnlineTaskLine.setState(TaskLine.TaskState.skipped);
+                    errorDetailsTextView.setVisibility(View.GONE);
+                    checkOnlineTaskLine.setState(TaskLine.TaskState.completed);
+                    currentTask = null;
+                    break;
+                case ERROR:
+                    errorDetailsTextView.setText(error);
+                    errorDetailsTextView.setVisibility(View.VISIBLE);
+                    if (currentTask != null) {
+                        currentTask.setState(TaskLine.TaskState.failed);
+                    }
+                    break;
             }
         };
 

@@ -18,7 +18,6 @@ import lombok.Getter;
 
 public class TaskLine extends LinearLayout {
     private final Context context;
-    private TextView taskTitleTextView;
     private ProgressBar taskLine_progressSpinner;
     private ImageView taskLine_taskIcon;
 
@@ -50,7 +49,7 @@ public class TaskLine extends LinearLayout {
 
     private void init() {
         View rootView = inflate(context, R.layout.task_line, this);
-        taskTitleTextView = rootView.findViewById(R.id.taskLine_taskTitle);
+        TextView taskTitleTextView = rootView.findViewById(R.id.taskLine_taskTitle);
         taskLine_progressSpinner = rootView.findViewById(R.id.taskLine_progressSpinner);
         taskLine_taskIcon = rootView.findViewById(R.id.taskLine_taskIcon);
 

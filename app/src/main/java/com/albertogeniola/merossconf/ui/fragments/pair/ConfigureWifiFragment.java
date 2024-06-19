@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -70,7 +69,6 @@ public class ConfigureWifiFragment extends Fragment {
 
     private static final String VALIDATE_AND_PROCEED = "Validate and proceed";
     private static final String DISCOVERY_MQTT = "MQTT discovery...";
-    private static final String MQTT_RESOLVE = "Resolving service...";
     private static final String COMPLETED = "Completed";
     private boolean mPaused = false;
 
@@ -108,14 +106,11 @@ public class ConfigureWifiFragment extends Fragment {
         mSkipButton.setOnClickListener(skipButtonClick);
         CheckBox showPasswordButton = view.findViewById(R.id.showPasswordCheckbox);
         mWifiPasswordTextView.getEditText().setTransformationMethod(PasswordTransformationMethod.getInstance());
-        showPasswordButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (mWifiPasswordTextView.getEditText().getTransformationMethod() == HideReturnsTransformationMethod.getInstance()) {
-                    mWifiPasswordTextView.getEditText().setTransformationMethod(PasswordTransformationMethod.getInstance());
-                } else {
-                    mWifiPasswordTextView.getEditText().setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-                }
+        showPasswordButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (mWifiPasswordTextView.getEditText().getTransformationMethod() == HideReturnsTransformationMethod.getInstance()) {
+                mWifiPasswordTextView.getEditText().setTransformationMethod(PasswordTransformationMethod.getInstance());
+            } else {
+                mWifiPasswordTextView.getEditText().setTransformationMethod(HideReturnsTransformationMethod.getInstance());
             }
         });
 
@@ -221,20 +216,17 @@ public class ConfigureWifiFragment extends Fragment {
     private void configureUi(final Boolean uiEnabled,
                              final String nextButtonText,
                              @Nullable final String textMessage) {
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                wifiSpinner.setEnabled(uiEnabled);
-                mNextButton.setEnabled(uiEnabled);
-                mSkipButton.setEnabled(uiEnabled);
-                mSaveWifiPasswordCheckBox.setEnabled(uiEnabled);
-                mNextButton.setText(nextButtonText);
-                mLinearProgressBar.setVisibility(uiEnabled ? View.GONE : View.VISIBLE);
-                mWifiPasswordTextView.setEnabled(uiEnabled);
+        Runnable r = () -> {
+            wifiSpinner.setEnabled(uiEnabled);
+            mNextButton.setEnabled(uiEnabled);
+            mSkipButton.setEnabled(uiEnabled);
+            mSaveWifiPasswordCheckBox.setEnabled(uiEnabled);
+            mNextButton.setText(nextButtonText);
+            mLinearProgressBar.setVisibility(uiEnabled ? View.GONE : View.VISIBLE);
+            mWifiPasswordTextView.setEnabled(uiEnabled);
 
-                if (textMessage != null) {
-                    Toast.makeText(requireContext(), textMessage, Toast.LENGTH_SHORT).show();
-                }
+            if (textMessage != null) {
+                Toast.makeText(requireContext(), textMessage, Toast.LENGTH_SHORT).show();
             }
         };
         if (Looper.getMainLooper().getThread()==Thread.currentThread())
@@ -312,13 +304,10 @@ public class ConfigureWifiFragment extends Fragment {
         if (mDiscoveryInProgress)
             mNsdManager.stopServiceDiscovery(mDiscoveryListener);
 
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                // Navigate to the next fragment
-                NavController ctrl = NavHostFragment.findNavController(ConfigureWifiFragment.this);
-                ctrl.navigate(R.id.action_configureWifi_to_configureMqtt, args, new NavOptions.Builder().setEnterAnim(android.R.animator.fade_in).setExitAnim(android.R.animator.fade_out).build());
-            }
+        Runnable r = () -> {
+            // Navigate to the next fragment
+            NavController ctrl = NavHostFragment.findNavController(ConfigureWifiFragment.this);
+            ctrl.navigate(R.id.action_configureWifi_to_configureMqtt, args, new NavOptions.Builder().setEnterAnim(android.R.animator.fade_in).setExitAnim(android.R.animator.fade_out).build());
         };
         mUiHandler.post(r);
     }
@@ -463,18 +452,15 @@ public class ConfigureWifiFragment extends Fragment {
             if (mDiscoveryInProgress)
                 mNsdManager.stopServiceDiscovery(mDiscoveryListener);
 
-            mUiHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    // Just store the current configuration and proceed to the next fragment
-                    pairActivityViewModel.setMerossWifiConfiguration(mSelectedWifi);
+            mUiHandler.post(() -> {
+                // Just store the current configuration and proceed to the next fragment
+                pairActivityViewModel.setMerossWifiConfiguration(mSelectedWifi);
 
-                    // Launch the next fragment
-                    NavController ctrl = NavHostFragment.findNavController(ConfigureWifiFragment.this);
-                    ctrl.navigate(R.id.action_configureWifi_to_configureMqtt, null, new NavOptions.Builder().setEnterAnim(android.R.animator.fade_in).setExitAnim(android.R.animator.fade_out).build());
+                // Launch the next fragment
+                NavController ctrl = NavHostFragment.findNavController(ConfigureWifiFragment.this);
+                ctrl.navigate(R.id.action_configureWifi_to_configureMqtt, null, new NavOptions.Builder().setEnterAnim(android.R.animator.fade_in).setExitAnim(android.R.animator.fade_out).build());
 
-                    configureUi(true,  VALIDATE_AND_PROCEED, "Failed to locate MQTT endpoint via mDNS");
-                }
+                configureUi(true,  VALIDATE_AND_PROCEED, "Failed to locate MQTT endpoint via mDNS");
             });
         }
     }

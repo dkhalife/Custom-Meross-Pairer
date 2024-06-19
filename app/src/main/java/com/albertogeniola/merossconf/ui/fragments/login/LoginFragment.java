@@ -62,13 +62,10 @@ public class LoginFragment extends Fragment {
     private EditText mHttpPasswordEditText;
     private MaterialButton mLoginButton;
     private MaterialButton mDiscoveryButton;
-    private TextView httpLoginIntroText;
-    private ImageView loginLogo;
 
     private Timer mTimer;
     private Handler mUiHandler;
 
-    private CircularProgressIndicator mSearchProgress;
     private IndeterminateDrawable<CircularProgressIndicatorSpec> mProgressIndicatorDrawable;
 
     public static class Args {
@@ -103,11 +100,11 @@ public class LoginFragment extends Fragment {
         mHttpUsernameEditText = ((TextInputLayout)view.findViewById(R.id.httpUsernameEditText)).getEditText();
         mLoginButton = view.findViewById(R.id.loginButton);
         mDiscoveryButton = view.findViewById(R.id.discoveryButton);
-        httpLoginIntroText = view.findViewById(R.id.httpLoginIntroText);
-        loginLogo = view.findViewById(R.id.loginLogo);
+        TextView httpLoginIntroText = view.findViewById(R.id.httpLoginIntroText);
+        ImageView loginLogo = view.findViewById(R.id.loginLogo);
 
         // Configure HostEditText for progress showing
-        mSearchProgress = new CircularProgressIndicator(requireContext(), null);
+        CircularProgressIndicator mSearchProgress = new CircularProgressIndicator(requireContext(), null);
         mSearchProgress.setIndicatorSize(dpToPx(requireContext(), 15));
         mSearchProgress.setIndeterminate(true);
         mProgressIndicatorDrawable = mSearchProgress.getIndeterminateDrawable();
