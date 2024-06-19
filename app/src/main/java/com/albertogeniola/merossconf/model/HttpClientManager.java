@@ -31,9 +31,8 @@ public class HttpClientManager {
         mClient = new MerossHttpClient();
     }
 
-    public MerossHttpClient loadFromCredentials(ApiCredentials creds) {
+    public void loadFromCredentials(ApiCredentials creds) {
         mClient = new MerossHttpClient(creds);
-        return mClient;
     }
 
     public void asyncLogin(final String serverUrl, final String username, final String password, Callback<ApiCredentials> callback) {

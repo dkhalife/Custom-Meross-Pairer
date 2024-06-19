@@ -102,10 +102,10 @@ public class MerossHttpClient implements Serializable {
         authenticatedPost(mCredentials.getApiServer()+LOGOUT_PATH, null, mCredentials.getToken(), Object.class);
     }
 
-    private static String generateNonce(int targetStringLength) {
-        StringBuilder result = new StringBuilder(targetStringLength);
+    private static String generateNonce() {
+        StringBuilder result = new StringBuilder(16);
         Random random = new Random();
-        for (int i=0;i<targetStringLength;i++) {
+        for (int i = 0; i< 16; i++) {
             char randomChar = NOONCE_ALPHABET.charAt(random.nextInt(NOONCE_ALPHABET.length()));
             result.append(randomChar);
         }
@@ -129,7 +129,7 @@ public class MerossHttpClient implements Serializable {
     @SneakyThrows({UnsupportedEncodingException.class, NoSuchAlgorithmException.class})
     private <T> T authenticatedPost(@NonNull String url, HashMap<String, Object> data, String httpToken, Type dataType) throws IOException, HttpApiException {
 
-        String nonce = generateNonce(16);
+        String nonce = generateNonce();
         long timestampMillis = new Date().getTime();
         String params = new String(Base64.encodeBase64(g.toJson(data == null ? DEFAULT_PARAMS : data ).getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8);
 
