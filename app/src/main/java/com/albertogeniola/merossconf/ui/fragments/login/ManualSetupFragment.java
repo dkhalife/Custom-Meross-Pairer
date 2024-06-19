@@ -51,7 +51,6 @@ public class ManualSetupFragment extends Fragment {
             // Args check
             String userId = mManualUserIdEditText.getText().toString();
             String userKey = mManualUserKeyEditText.getText().toString();
-            Integer userIdInt = null;
 
             // Check UserId
             if (Strings.isEmpty(userId)) {
@@ -60,8 +59,7 @@ public class ManualSetupFragment extends Fragment {
             }
             else {
                 try {
-                    userIdInt = Integer.parseInt(userId);
-                    if (userIdInt<0)
+                    if (Integer.parseInt(userId)<0)
                         throw new NumberFormatException();
                     else
                         mManualUserIdEditText.setError(null);

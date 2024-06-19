@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -96,8 +97,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onReceive(Context context, Intent intent) {
                 if(intent.getAction().equals(NETWORK_STATE_CHANGED_ACTION) || intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
-                    String connectedSsid = null;
-                    connectedSsid = AndroidUtils.getConnectedWifi(MainActivity.this);
+                    String connectedSsid = AndroidUtils.getConnectedWifi(MainActivity.this);
                     updateWifiStatus(connectedSsid!=null, connectedSsid);
                 } else if (intent.getAction().equals(PROVIDERS_CHANGED_ACTION)) {
                     updateLocationStatus(AndroidUtils.isLocationEnabled(MainActivity.this));
@@ -179,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         ApiCredentials creds = AndroidPreferencesManager.loadHttpCredentials(MainActivity.this);
 
         if (creds == null) {
