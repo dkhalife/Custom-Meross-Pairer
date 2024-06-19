@@ -9,7 +9,10 @@ import com.google.gson.JsonSerializer;
 
 import java.lang.reflect.Type;
 
+import lombok.Getter;
 
+
+@Getter
 public enum OnlineStatus {
     UNKNOWN(0),
     ONLINE(1),
@@ -19,10 +22,6 @@ public enum OnlineStatus {
     private final int value;
     OnlineStatus(int value) {
         this.value = value;
-    }
-
-    public int getValue() {
-        return value;
     }
 
     public static OnlineStatus findByAbbr(int value)

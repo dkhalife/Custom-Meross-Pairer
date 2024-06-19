@@ -13,6 +13,8 @@ import androidx.annotation.Nullable;
 
 import com.albertogeniola.merossconf.R;
 
+import lombok.Getter;
+
 
 public class TaskLine extends LinearLayout {
     private final Context context;
@@ -21,6 +23,7 @@ public class TaskLine extends LinearLayout {
     private ImageView taskLine_taskIcon;
 
     private String taskTitle = "";
+    @Getter
     private TaskState state = TaskState.not_started;
 
     public TaskLine(Context context) {
@@ -53,10 +56,6 @@ public class TaskLine extends LinearLayout {
         taskTitleTextView.setText(taskTitle);
         taskLine_progressSpinner.setIndeterminate(true);
         setState(state);
-    }
-
-    public TaskState getState() {
-        return this.state;
     }
 
     public void setState(TaskState state) {
