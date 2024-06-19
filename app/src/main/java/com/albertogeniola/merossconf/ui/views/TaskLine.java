@@ -43,6 +43,7 @@ public class TaskLine extends LinearLayout {
             state = TaskState.values()[a.getInt(R.styleable.TaskLine_state,-1)];
         } finally {
             a.recycle();
+            a.close();
         }
         init();
     }

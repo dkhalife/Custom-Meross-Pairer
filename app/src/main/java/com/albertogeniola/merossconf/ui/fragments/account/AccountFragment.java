@@ -1,6 +1,5 @@
 package com.albertogeniola.merossconf.ui.fragments.account;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +13,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
@@ -25,7 +23,6 @@ import com.albertogeniola.merossconf.R;
 import com.albertogeniola.merossconf.model.HttpClientManager;
 import com.albertogeniola.merossconf.ui.MainActivityViewModel;
 import com.albertogeniola.merossconf.ui.fragments.login.LoginFragment;
-import com.albertogeniola.merosslib.model.http.ApiCredentials;
 
 import org.eclipse.paho.client.mqttv3.util.Strings;
 

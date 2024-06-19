@@ -15,13 +15,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -102,7 +100,6 @@ public class MainActivity extends AppCompatActivity {
                     connectedSsid = AndroidUtils.getConnectedWifi(MainActivity.this);
                     updateWifiStatus(connectedSsid!=null, connectedSsid);
                 } else if (intent.getAction().equals(PROVIDERS_CHANGED_ACTION)) {
-                    Boolean locationEnabled = null;
                     updateLocationStatus(AndroidUtils.isLocationEnabled(MainActivity.this));
                 }
             }
@@ -113,7 +110,6 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
         navigationView.setNavigationItemSelectedListener(menuItem -> {
-            ApiCredentials creds = AndroidPreferencesManager.loadHttpCredentials(MainActivity.this);
             NavigationUI.onNavDestinationSelected(menuItem, navController);
             return true;
         });

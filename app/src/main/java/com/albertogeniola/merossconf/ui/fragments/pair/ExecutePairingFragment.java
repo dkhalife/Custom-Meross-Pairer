@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -104,7 +105,7 @@ public class ExecutePairingFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        //requireActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        requireActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
     private void connectToDeviceWifiAp() {
@@ -146,7 +147,7 @@ public class ExecutePairingFragment extends Fragment {
         state = State.VERIFYING_PAIRING_SUCCEEDED;
 
         final long timeout = GregorianCalendar.getInstance().getTimeInMillis() + Constants.PAIRING_VERIFY_TIMEOUT_MILLISECONDS;
-        ScheduledFuture<?> future = worker.schedule(new Runnable() {
+        worker.schedule(new Runnable() {
             private @Nullable DeviceInfo findDevice(Collection<DeviceInfo> devices, String deviceUuid) {
                 for (DeviceInfo d : devices) {
                     Log.d(TAG, "Device " + d.getUuid() + " has been found with status: " + d.getOnlineStatus());
@@ -164,17 +165,17 @@ public class ExecutePairingFragment extends Fragment {
                 boolean succeed = false;
                 boolean timedOut = GregorianCalendar.getInstance().getTimeInMillis() >= timeout;
                 boolean exitNow = false;
-                while(!exitNow && !succeed && !Thread.currentThread().isInterrupted() && !timedOut) {
+                while (!exitNow && !succeed && !Thread.currentThread().isInterrupted() && !timedOut) {
                     try {
                         List<DeviceInfo> devices = client.listDevices();
                         DeviceInfo d = findDevice(devices, targetUuid);
                         if (d == null) {
-                            Log.i(TAG, "Device " +targetUuid + " not paired yet.");
+                            Log.i(TAG, "Device " + targetUuid + " not paired yet.");
                         } else if (d.getOnlineStatus() == OnlineStatus.ONLINE) {
-                            Log.i(TAG, "Device " +targetUuid + " is online.");
+                            Log.i(TAG, "Device " + targetUuid + " is online.");
                             succeed = true;
                         } else {
-                            Log.i(TAG, "Device " +targetUuid + " is paired, but not ready yet or in an unknown status.");
+                            Log.i(TAG, "Device " + targetUuid + " is paired, but not ready yet or in an unknown status.");
                         }
                     } catch (HttpApiException e) {
                         e.printStackTrace();
@@ -424,11 +425,6 @@ public class ExecutePairingFragment extends Fragment {
 
         // As soon as we resume, connect to the given WiFi
         stateMachine(Signal.RESUMED);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
     }
 
     enum State {

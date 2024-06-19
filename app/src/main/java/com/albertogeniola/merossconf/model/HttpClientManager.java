@@ -1,12 +1,9 @@
 package com.albertogeniola.merossconf.model;
 
-import android.content.Context;
 import android.os.AsyncTask;
 
 import androidx.annotation.Nullable;
 
-import com.albertogeniola.merossconf.AndroidPreferencesManager;
-import com.albertogeniola.merossconf.model.exception.MissingHttpCredentials;
 import com.albertogeniola.merosslib.MerossHttpClient;
 import com.albertogeniola.merosslib.model.http.ApiCredentials;
 import com.albertogeniola.merosslib.model.http.DeviceInfo;
@@ -75,14 +72,6 @@ public class HttpClientManager {
             }
         };
         t.execute(mClient);
-    }
-
-    private static MerossHttpClient fetchStoredClient(Context c) throws MissingHttpCredentials {
-        ApiCredentials creds = AndroidPreferencesManager.loadHttpCredentials(c);
-        if (creds == null)
-            throw new MissingHttpCredentials("No HTTP credentials are available");
-
-        return new MerossHttpClient(creds);
     }
 
     private static abstract class CallbackTask<T> {

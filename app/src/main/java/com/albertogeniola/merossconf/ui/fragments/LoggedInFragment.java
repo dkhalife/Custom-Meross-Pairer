@@ -10,10 +10,4 @@ public abstract class LoggedInFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        // Make sure
-    }
 }

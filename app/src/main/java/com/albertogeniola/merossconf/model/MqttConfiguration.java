@@ -1,6 +1,8 @@
 package com.albertogeniola.merossconf.model;
 
 
+import androidx.annotation.NonNull;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,20 +17,7 @@ public class MqttConfiguration {
     private String hostname;
     private int port;
 
-    public void validate() throws ValidationError {
-        if (name == null || name.isEmpty()) {
-            throw new ValidationError("Name is empty or invalid.");
-        }
-
-        if (hostname == null || hostname.isEmpty()) {
-            throw new ValidationError("Hostname is empty or invalid.");
-        }
-
-        if (port > 65535 || port < 1) {
-            throw new ValidationError("Port is invalid.");
-        }
-    }
-
+    @NonNull
     @Override
     public String toString() {
         return name;

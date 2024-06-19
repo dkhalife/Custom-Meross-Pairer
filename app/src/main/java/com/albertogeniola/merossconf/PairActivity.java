@@ -85,11 +85,6 @@ public class PairActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
-
-    @Override
     protected void onPause() {
         super.onPause();
         this.unregisterReceiver(this.mReceiver);
