@@ -30,9 +30,9 @@ It would really motivate me to continue working on this repository to improve do
 
 By issuing a donation, you will:
 1. Give me the opportunity to buy new hardware (can you imagine how much ram you need when running 2 IntelliJ instances, a couple of Docker containers, an 8Gb VM, PyCharm and Chrome togerher? 
-1. Pay for licensed development tools 
+2. Pay for licensed development tools 
 (Note that they are used for Unit-Testing on the continuous integration engine when someone pushes a PR... I love DEVOPing!)  
-1. You'll increase the quality of my coding sessions with free-beer!
+3. You'll increase the quality of my coding sessions with free-beer!
 
 [![Buy me a coffee!](https://www.buymeacoffee.com/assets/img/custom_images/black_img.png)](https://www.buymeacoffee.com/albertogeniola)
 
