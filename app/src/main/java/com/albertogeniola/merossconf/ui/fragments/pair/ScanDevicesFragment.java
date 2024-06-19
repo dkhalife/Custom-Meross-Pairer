@@ -37,7 +37,6 @@ import com.albertogeniola.merossconf.model.MerossDeviceAp;
 import com.albertogeniola.merossconf.ui.PairActivityViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
