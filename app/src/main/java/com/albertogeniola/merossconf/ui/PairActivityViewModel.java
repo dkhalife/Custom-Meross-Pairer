@@ -8,7 +8,6 @@ import com.albertogeniola.merossconf.model.MqttConfiguration;
 import com.albertogeniola.merossconf.model.MerossDeviceAp;
 import com.albertogeniola.merossconf.model.WifiConfiguration;
 import com.albertogeniola.merossconf.model.WifiLocationStatus;
-import com.albertogeniola.merosslib.model.http.ApiCredentials;
 import com.albertogeniola.merosslib.model.protocol.MessageGetConfigWifiListResponse;
 import com.albertogeniola.merosslib.model.protocol.MessageGetSystemAllResponse;
 

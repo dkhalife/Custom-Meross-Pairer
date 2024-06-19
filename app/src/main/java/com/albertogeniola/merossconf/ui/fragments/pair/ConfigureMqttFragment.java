@@ -23,8 +23,6 @@ import com.albertogeniola.merossconf.AndroidPreferencesManager;
 import com.albertogeniola.merossconf.R;
 import com.albertogeniola.merossconf.model.MqttConfiguration;
 import com.albertogeniola.merossconf.ui.PairActivityViewModel;
-import com.albertogeniola.merosslib.model.http.ApiCredentials;
-import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.List;

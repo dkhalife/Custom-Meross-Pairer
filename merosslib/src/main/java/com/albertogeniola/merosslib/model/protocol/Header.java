@@ -3,7 +3,6 @@ package com.albertogeniola.merosslib.model.protocol;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;

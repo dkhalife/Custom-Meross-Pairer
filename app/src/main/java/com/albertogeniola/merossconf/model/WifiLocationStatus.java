@@ -2,7 +2,6 @@ package com.albertogeniola.merossconf.model;
 
 import androidx.annotation.Nullable;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 

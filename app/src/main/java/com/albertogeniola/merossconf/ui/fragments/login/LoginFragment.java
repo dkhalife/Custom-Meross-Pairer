@@ -32,7 +32,6 @@ import com.albertogeniola.merossconf.R;
 import com.albertogeniola.merossconf.model.HttpClientManager;
 import com.albertogeniola.merossconf.ui.MainActivityViewModel;
 import com.albertogeniola.merosslib.model.http.ApiCredentials;
-import com.albertogeniola.merosslib.model.http.ErrorCodes;
 import com.albertogeniola.merosslib.model.http.exceptions.HttpApiException;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.progressindicator.CircularProgressIndicator;

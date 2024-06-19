@@ -2,7 +2,7 @@ package com.albertogeniola.merossconf.model;
 
 import android.util.Base64;
 import com.albertogeniola.merosslib.model.protocol.payloads.GetConfigWifiListEntry;
-import java.io.UnsupportedEncodingException;
+
 import java.nio.charset.StandardCharsets;
 
 import lombok.Getter;
