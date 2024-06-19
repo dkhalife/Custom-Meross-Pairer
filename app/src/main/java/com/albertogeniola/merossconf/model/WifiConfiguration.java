@@ -18,6 +18,6 @@ public class WifiConfiguration {
     }
 
     public String getWifiPasswordBase64() {
-        return Base64.encodeToString(clearWifiPassword.toString().getBytes(StandardCharsets.UTF_8), Base64.NO_WRAP);
+        return Base64.encodeToString(clearWifiPassword.getBytes(StandardCharsets.UTF_8), Base64.NO_WRAP);
     }
 }
