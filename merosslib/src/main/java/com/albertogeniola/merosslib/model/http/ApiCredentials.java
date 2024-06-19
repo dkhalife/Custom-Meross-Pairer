@@ -39,9 +39,4 @@ public class ApiCredentials {
     public boolean isManuallySet() {
         return apiServer==null || token == null || userEmail == null;
     }
-
-    public boolean isExpired() {
-        // TODO: for now, tokens never expire
-        return false;
-    }
 }

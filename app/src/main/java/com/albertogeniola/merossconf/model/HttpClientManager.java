@@ -83,9 +83,6 @@ public class HttpClientManager {
         if (creds == null)
             throw new MissingHttpCredentials("No HTTP credentials are available");
 
-        if (creds.isExpired())
-            throw new MissingHttpCredentials("Stored HTTP credentials has expired");
-
         return new MerossHttpClient(creds);
     }
 
