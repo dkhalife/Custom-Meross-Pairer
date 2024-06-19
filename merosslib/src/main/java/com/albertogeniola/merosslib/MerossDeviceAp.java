@@ -16,13 +16,12 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
+import com.squareup.okhttp.ResponseBody;
 
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
-
-import javax.net.SocketFactory;
 
 import lombok.Getter;
 
@@ -35,10 +34,6 @@ public class MerossDeviceAp implements Serializable {
     private final String cloudKey;
     private final OkHttpClient client;
     private final Gson g = Utils.getGson();
-
-    public void setSocketFactory(SocketFactory factory) {
-        client.setSocketFactory(factory);
-    }
 
     public MerossDeviceAp(String ip, String cloudKey) {
         this.ip = ip;
@@ -62,14 +57,14 @@ public class MerossDeviceAp implements Serializable {
         return this.sendMessage(message, MessageGetConfigWifiListResponse.class);
     }
 
-    public MessageSetConfigKeyResponse setConfigKey(String hostname, int port, String key, String userId ) throws IOException {
+    public void setConfigKey(String hostname, int port, String key, String userId ) throws IOException {
         Message message = MessageSetConfigKey.BuildNew(hostname, port, key, userId);
-        return this.sendMessage(message, MessageSetConfigKeyResponse.class);
+        this.sendMessage(message, MessageSetConfigKeyResponse.class);
     }
 
-    public MessageSetConfigWifiResponse setConfigWifi(GetConfigWifiListEntry wifiConfig, String base64password) throws IOException {
+    public void setConfigWifi(GetConfigWifiListEntry wifiConfig, String base64password) throws IOException {
         Message message = MessageSetConfigWifi.BuildNew(wifiConfig.getBase64ssid(), base64password, wifiConfig.getBssid(), wifiConfig.getChannel(), wifiConfig.getCipher(), wifiConfig.getEncryption());
-        return this.sendMessage(message, MessageSetConfigWifiResponse.class);
+        this.sendMessage(message, MessageSetConfigWifiResponse.class);
     }
 
     private <T> T sendMessage(Message message, Class<T> type) throws IOException {
@@ -85,6 +80,10 @@ public class MerossDeviceAp implements Serializable {
         if (response.code() != 200 ) {
             throw new IOException("Invalid response code (" + response.code() + ") received from Meross Device");
         }
-        return g.fromJson(response.body().string(), type);
+
+        ResponseBody body = response.body();
+        T retValue = g.fromJson(body.string(), type);
+        body.close();
+        return retValue;
     }
 }
