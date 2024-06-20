@@ -50,7 +50,6 @@ public class ConfigureWifiFragment extends Fragment {
     private static final String TAG = "ConfigureWifiFragment";
     private NsdManager mNsdManager;
     private static final String SERVICE_TYPE = "_meross-mqtt._tcp.";
-    private static final int WIFI_CONNECT_DELAY = 5000;
 
     private Handler mUiHandler;
     private PairActivityViewModel pairActivityViewModel;
@@ -62,7 +61,6 @@ public class ConfigureWifiFragment extends Fragment {
     private ProgressBar mLinearProgressBar;
     private CheckBox mSaveWifiPasswordCheckBox;
     private boolean mDiscoveryInProgress = false;
-    private boolean mResolveInProgress = false;
     private WifiConfiguration mSelectedWifi = null;
 
     private Timer mTimer;
@@ -70,8 +68,6 @@ public class ConfigureWifiFragment extends Fragment {
     private static final String VALIDATE_AND_PROCEED = "Validate and proceed";
     private static final String DISCOVERY_MQTT = "MQTT discovery...";
     private static final String COMPLETED = "Completed";
-    private boolean mPaused = false;
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -127,29 +123,16 @@ public class ConfigureWifiFragment extends Fragment {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-
             }
         });
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        mPaused = true;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        mPaused = false;
-    }
-
-    @Override
     public void onDestroy() {
         super.onDestroy();
-        if (mDiscoveryInProgress)
+        if (mDiscoveryInProgress) {
             mNsdManager.stopServiceDiscovery(mDiscoveryListener);
-        mResolveInProgress = false;
+        }
     }
 
     /*@Override
@@ -278,12 +261,6 @@ public class ConfigureWifiFragment extends Fragment {
 
     private void notifyResolveCompleted(@Nullable final String hostname,
                                       @Nullable final Integer port) {
-        // FIXME: Workaround, as it appears there is no way to stop the mNSDManager from
-        //  notifying resolved services ater a network/reconnection (stopping the discovery does
-        //  not help)
-        if (mPaused)
-            return;
-
         configureUi(false, COMPLETED, null);
 
         // In case the discovery found a valid service, put it into a parcel for the next fragment
@@ -428,13 +405,11 @@ public class ConfigureWifiFragment extends Fragment {
         public void onResolveFailed(NsdServiceInfo serviceInfo, int errorCode) {
 
             Log.e(TAG, "Resolve failed" + errorCode);
-            mResolveInProgress = false;
             configureUi(false, VALIDATE_AND_PROCEED, "mDNSResolve failed");
         }
         @Override
         public void onServiceResolved(final NsdServiceInfo serviceInfo) {
             Log.e(TAG, "Resolve Succeeded. " + serviceInfo);
-            mResolveInProgress = false;
             // Make sure we only rely on IPv4 Addresses. IPV4 are 4 bytes long.
             if (serviceInfo.getHost().getAddress().length!=4) {
                 Log.w(TAG, "Ignoring discovered IP " + serviceInfo.getHost().getHostAddress() + " as it is not a valid IPv4 address");

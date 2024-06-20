@@ -120,14 +120,8 @@ public class FetchDeviceInfoFragment extends Fragment {
 
         final ConnectivityManager.NetworkCallback networkCallback = new ConnectivityManager.NetworkCallback() {
             @Override
-            public void onBlockedStatusChanged(@NonNull Network network, boolean blocked) {
-                super.onBlockedStatusChanged(network, blocked);
-
-                if (blocked) {
-                    stateMachine(Signal.AP_CONNECTED);
-                    return;
-                }
-
+            public void onAvailable(@NonNull Network network) {
+                super.onAvailable(network);
                 connectivityManager.bindProcessToNetwork(network);
                 stateMachine(Signal.AP_CONNECTED);
             }
