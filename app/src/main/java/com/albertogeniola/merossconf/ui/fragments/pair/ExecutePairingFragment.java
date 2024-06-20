@@ -126,9 +126,9 @@ public class ExecutePairingFragment extends Fragment {
     private void connectToLocalWifi() {
         state = State.CONNETING_LOCAL_WIFI;
 
-        String ssid = pairActivityViewModel.getMerossConfiguredWifi().getValue().getScannedWifi().getSsid();
-        String bssid = pairActivityViewModel.getMerossConfiguredWifi().getValue().getScannedWifi().getBssid();
-        String passphrase = pairActivityViewModel.getMerossConfiguredWifi().getValue().getClearWifiPassword();
+        pairActivityViewModel.getMerossConfiguredWifi().getValue().getScannedWifi().getSsid();
+        pairActivityViewModel.getMerossConfiguredWifi().getValue();
+        pairActivityViewModel.getMerossConfiguredWifi().getValue();
 
         // Check if we are already connected to such wifi
         // TODO: Check comparison happens with double quotes

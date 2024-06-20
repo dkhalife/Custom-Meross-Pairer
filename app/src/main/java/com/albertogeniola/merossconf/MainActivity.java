@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
         final NavigationView navigationView = findViewById(R.id.nav_view);
         mPairMenuItem = navigationView.getMenu().findItem(R.id.pair_activity);
         mDeviceMenuItem = navigationView.getMenu().findItem(R.id.devices_fragment);
-        TextView versionInfo = (TextView)navigationView.getHeaderView(0).findViewById(R.id.appVersionTextView);
+        TextView versionInfo = navigationView.getHeaderView(0).findViewById(R.id.appVersionTextView);
         try {
             PackageInfo pInfo = getPackageManager().getPackageInfo(this.getPackageName(), 0);
             String version = pInfo.versionName;
