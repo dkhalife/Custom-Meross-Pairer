@@ -35,14 +35,9 @@ public class TaskLine extends LinearLayout {
         super(context, attrs);
         this.context = context;
 
-        TypedArray a = context.getTheme().obtainStyledAttributes(attrs,R.styleable.TaskLine,0, 0);
-
-        try {
+        try (TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.TaskLine, 0, 0)) {
             taskTitle = a.getString(R.styleable.TaskLine_title);
-            state = TaskState.values()[a.getInt(R.styleable.TaskLine_state,-1)];
-        } finally {
-            a.recycle();
-            a.close();
+            state = TaskState.values()[a.getInt(R.styleable.TaskLine_state, -1)];
         }
         init();
     }
