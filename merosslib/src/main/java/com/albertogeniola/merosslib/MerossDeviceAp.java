@@ -39,8 +39,8 @@ public class MerossDeviceAp implements Serializable {
         this.ip = ip;
         this.cloudKey = cloudKey;
         this.client = new OkHttpClient();
-        this.client.setConnectTimeout(40, TimeUnit.SECONDS);
-        this.client.setReadTimeout(40, TimeUnit.SECONDS);
+        this.client.setConnectTimeout(15, TimeUnit.SECONDS);
+        this.client.setReadTimeout(15, TimeUnit.SECONDS);
     }
 
     public MerossDeviceAp() {
@@ -70,10 +70,12 @@ public class MerossDeviceAp implements Serializable {
     private <T> T sendMessage(Message message, Class<T> type) throws IOException {
         message.sign(cloudKey); // Signature is not verified when pairing!
 
+        String jj = g.toJson(message);
+        RequestBody msg = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), jj.getBytes(StandardCharsets.UTF_8));
         Request request = new Request.Builder()
                 .url("http://" + ip + "/config")
                 .addHeader("Content-Type", "application/json")
-                .post(RequestBody.create(MediaType.parse("application/json; charset=utf-8"), g.toJson(message).getBytes(StandardCharsets.UTF_8)))
+                .post(msg)
                 .build();
         Response response = client.newCall(request).execute();
 

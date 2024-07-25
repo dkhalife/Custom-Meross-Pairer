@@ -1,11 +1,17 @@
 package com.albertogeniola.merossconf.ui.fragments.pair;
 
+import static androidx.core.content.ContextCompat.registerReceiver;
+
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.NetworkRequest;
 import android.net.NetworkSpecifier;
+import android.net.wifi.WifiManager;
 import android.net.wifi.WifiNetworkSpecifier.Builder;
 import android.os.Bundle;
 import android.os.Handler;
@@ -35,6 +41,7 @@ import com.google.android.material.snackbar.Snackbar;
 import java.io.IOException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 
 public class FetchDeviceInfoFragment extends Fragment {
@@ -48,11 +55,13 @@ public class FetchDeviceInfoFragment extends Fragment {
     private State state = State.INIT;
     private TaskLine currentTask = null;
     private String error = null;
-    private final MerossDeviceAp device = new MerossDeviceAp();
+    private MerossDeviceAp device;
     private MessageGetSystemAllResponse deviceInfo;
     private MessageGetConfigWifiListResponse deviceAvailableWifis;
 
     private PairActivityViewModel pairActivityViewModel;
+    private ConnectivityManager.NetworkCallback mNetworkCallback;
+    private ConnectivityManager mConnectivityManager;
 
     public FetchDeviceInfoFragment() {
         worker = Executors.newSingleThreadScheduledExecutor();
@@ -115,30 +124,49 @@ public class FetchDeviceInfoFragment extends Fragment {
                         .removeCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
                         .setNetworkSpecifier(specifier)
                         .build();
-        final ConnectivityManager connectivityManager =
-                (ConnectivityManager) requireContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        final ConnectivityManager.NetworkCallback networkCallback = new ConnectivityManager.NetworkCallback() {
+        if (mNetworkCallback != null) {
+            mConnectivityManager.unregisterNetworkCallback(mNetworkCallback);
+        }
+        EnsureNetworkCallback(mConnectivityManager);
+        mConnectivityManager.requestNetwork(request, mNetworkCallback);
+    }
+
+    private void EnsureNetworkCallback(ConnectivityManager connectivityManager) {
+        if (mNetworkCallback != null) {
+            return;
+        }
+
+        mNetworkCallback = new ConnectivityManager.NetworkCallback() {
+            final Handler mainHandler = new Handler(Looper.getMainLooper());
+
             @Override
             public void onAvailable(@NonNull Network network) {
                 super.onAvailable(network);
-                connectivityManager.bindProcessToNetwork(network);
-                stateMachine(Signal.AP_CONNECTED);
+                mainHandler.post(() -> {
+                    connectivityManager.bindProcessToNetwork(network);
+                    device = new MerossDeviceAp();
+                    stateMachine(Signal.AP_CONNECTED);
+                });
             }
 
             @Override
             public void onLost(@NonNull Network network) {
                 super.onLost(network);
-                stateMachine(Signal.ERROR);
+
+                mainHandler.post(() -> {
+                    stateMachine(Signal.ERROR);
+                });
             }
 
             @Override
             public void onUnavailable() {
                 super.onUnavailable();
-                stateMachine(Signal.ERROR);
+                mainHandler.post(() -> {
+                    stateMachine(Signal.ERROR);
+                });
             }
         };
-        connectivityManager.requestNetwork(request, networkCallback);
     }
 
     private void startDeviceWifiScan() {
@@ -154,7 +182,8 @@ public class FetchDeviceInfoFragment extends Fragment {
     }
 
     private void collectDeviceInfo() {
-        worker.execute(() -> {
+        mConnectivityManager.unregisterNetworkCallback(mNetworkCallback);
+        worker.schedule(() -> {
             try {
                 deviceInfo = device.getConfig();
                 stateMachine(Signal.INFO_GATHERED);
@@ -164,7 +193,7 @@ public class FetchDeviceInfoFragment extends Fragment {
                     stateMachine(Signal.ERROR);
                 });
             }
-        });
+        }, 2, TimeUnit.SECONDS);
     }
 
     private void completeActivityFragment() {
@@ -227,6 +256,7 @@ public class FetchDeviceInfoFragment extends Fragment {
         pairActivityViewModel = new ViewModelProvider(requireActivity()).get(PairActivityViewModel.class);
         uiThreadHandler = new Handler(Looper.getMainLooper());
         requireActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        mConnectivityManager = (ConnectivityManager) requireContext().getSystemService(Context.CONNECTIVITY_SERVICE);
     }
 
     @Override
