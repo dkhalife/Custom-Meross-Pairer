@@ -1,0 +1,10 @@
+{
+    "java.configuration.updateBuildConfiguration": "interactive",
+    "gradle.javaDebug": {
+        "tasks": [
+            "app:installDebug",
+            "app:installDebugAndroidTest"
+        ],
+        "clean": false
+    }
+}
