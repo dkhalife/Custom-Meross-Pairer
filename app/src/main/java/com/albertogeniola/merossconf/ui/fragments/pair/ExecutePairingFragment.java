@@ -159,7 +159,8 @@ public class ExecutePairingFragment extends Fragment {
 
             @Override
             public void run() {
-                MerossHttpClient client = new MerossHttpClient(mCreds);
+                // TODO: Bind to network
+                MerossHttpClient client = new MerossHttpClient(mCreds, null);
                 String targetUuid = pairActivityViewModel.getDeviceInfo().getValue().getPayload().getAll().getSystem().getHardware().getUuid();
                 boolean succeed = false;
                 boolean timedOut = GregorianCalendar.getInstance().getTimeInMillis() >= timeout;

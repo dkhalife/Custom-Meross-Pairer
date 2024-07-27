@@ -10,11 +10,6 @@ import com.albertogeniola.merosslib.model.http.exceptions.HttpApiInvalidCredenti
 import com.albertogeniola.merosslib.model.http.exceptions.HttpApiTokenException;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
 
 import org.apache.commons.codec.binary.Base64;
 
@@ -22,6 +17,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -29,10 +25,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
-
-import javax.net.SocketFactory;
 
 import lombok.NonNull;
 import lombok.SneakyThrows;
@@ -52,23 +45,15 @@ public class MerossHttpClient implements Serializable {
 
     // Class attributes
     private ApiCredentials mCredentials;
-    private final OkHttpClient mClient;
+    private final NetworkProxy mClient;
 
     public MerossHttpClient() {
-        this(null, new OkHttpClient());
-    }
-    public void setSocketFactory(SocketFactory socketFactory) {
-        mClient.setSocketFactory(socketFactory);
-    }
-    public MerossHttpClient(ApiCredentials creds) {
-        this(creds, new OkHttpClient());
+        this(null, null);
     }
 
-    private MerossHttpClient(ApiCredentials creds, OkHttpClient client) {
+    public MerossHttpClient(ApiCredentials creds, NetworkProxy client) {
         this.mCredentials = creds;
         this.mClient = client;
-        this.mClient.setConnectTimeout(10, TimeUnit.SECONDS);
-        this.mClient.setReadTimeout(10, TimeUnit.SECONDS);
     }
 
     @SneakyThrows(UnsupportedEncodingException.class)
@@ -91,8 +76,7 @@ public class MerossHttpClient implements Serializable {
     public List<DeviceInfo> listDevices() throws IOException, HttpApiException {
         HashMap<String, Object> data = new HashMap<>();
         TypeToken<?> typeToken = TypeToken.getParameterized(List.class, DeviceInfo.class);
-        List<DeviceInfo> devices = authenticatedPost( mCredentials.getApiServer()+DEVICE_LIST, data, this.mCredentials.getToken(), typeToken.getType());
-        return devices;
+        return authenticatedPost( mCredentials.getApiServer()+DEVICE_LIST, data, this.mCredentials.getToken(), typeToken.getType());
     }
 
     public void logout() throws HttpApiException, IOException {
@@ -146,21 +130,17 @@ public class MerossHttpClient implements Serializable {
         payload.put("nonce", nonce);
 
         String requestData = g.toJson(payload);
-        Request request = new Request.Builder()
-                .url(url)
-                .addHeader("Content-Type", "application/json; charset=utf-8")
-                .addHeader("Authorization",  httpToken == null ? "Basic" : "Basic " + httpToken)
-                .addHeader("vender", "Meross")
-                .addHeader("AppVersion", "1.3.0")
-                .addHeader("AppLanguage", "EN")
-                .addHeader("User-Agent", "okhttp/3.6.0")
-                .post(RequestBody.create(MediaType.parse("application/json; charset=utf-8"), requestData.getBytes(StandardCharsets.UTF_8)))
-                .build();
+        HashMap<String, String> headers = new HashMap<String, String>();
+        headers.put("Content-Type", "application/json; charset=utf-8");
+        headers.put("Authorization",  httpToken == null ? "Basic" : "Basic " + httpToken);
+        headers.put("vender", "Meross");
+        headers.put("AppVersion", "1.3.0");
+        headers.put("AppLanguage", "EN");
+        headers.put("User-Agent", "okhttp/3.6.0");
 
-        l.fine("HTTP Request, METHOD:" + request.method() +", URL: " + request.urlString() + ", HEADERS: "+ request.headers() +", DATA:" +requestData);
-        Response response = mClient.newCall(request).execute();
-        String strdata = response.body().string();
-        l.fine("HTTP Response, STATUS_CODE: "+response.code()+", HEADERS: "+response.headers() + ", BODY: "+strdata);
+        NetworkResponse response = mClient.post(new URL(url), headers, requestData);
+        String strdata = response.body();
+        l.fine("HTTP Response, STATUS_CODE: "+response.code()+", BODY: "+strdata);
         if (response.code() != 200) {
             l.severe("Bad HTTP Response code: " + response.code() );
         }
@@ -168,21 +148,17 @@ public class MerossHttpClient implements Serializable {
         TypeToken<?> token = TypeToken.getParameterized(ApiResponse.class, dataType);
         ApiResponse<T> responseData = g.fromJson(strdata, token.getType());
 
-        switch (responseData.getApiStatus()) {
-            case CODE_NO_ERROR:
-                return responseData.getData();
-            case CODE_WRONG_CREDENTIALS:
-            case CODE_UNEXISTING_ACCOUNT:
-                throw new HttpApiInvalidCredentialsException(responseData.getApiStatus());
-            case CODE_TOKEN_ERROR:
-            case CODE_TOKEN_EXPIRED:
-            case CODE_TOKEN_INVALID:
-            case CODE_TOO_MANY_TOKENS:
-                throw new HttpApiTokenException(responseData.getApiStatus());
-            default:
+        return switch (responseData.getApiStatus()) {
+            case CODE_NO_ERROR -> responseData.getData();
+            case CODE_WRONG_CREDENTIALS, CODE_UNEXISTING_ACCOUNT ->
+                    throw new HttpApiInvalidCredentialsException(responseData.getApiStatus());
+            case CODE_TOKEN_ERROR, CODE_TOKEN_EXPIRED, CODE_TOKEN_INVALID, CODE_TOO_MANY_TOKENS ->
+                    throw new HttpApiTokenException(responseData.getApiStatus());
+            default -> {
                 l.severe("API Code was unknown. Passing CODE_ERROR_GENERIC to the handler.");
                 throw new HttpApiException(responseData.getApiStatus() == null ? ErrorCodes.CODE_GENERIC_ERROR : responseData.getApiStatus());
-        }
+            }
+        };
     }
 
     public ApiCredentials getCredentials() {

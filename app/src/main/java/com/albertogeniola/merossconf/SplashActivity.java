@@ -3,9 +3,11 @@ package com.albertogeniola.merossconf;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.view.View;
 
+import com.albertogeniola.merossconf.model.AndroidNetworkProxy;
 import com.albertogeniola.merossconf.model.HttpClientManager;
 import com.albertogeniola.merosslib.model.http.ApiCredentials;
 import com.google.android.material.button.MaterialButton;
@@ -65,7 +67,7 @@ public class SplashActivity extends Activity {
         HttpClientManager instance = HttpClientManager.getInstance();
         ApiCredentials creds = AndroidPreferencesManager.loadHttpCredentials(this);
         if (creds != null) {
-            instance.loadFromCredentials(creds);
+            instance.loadFromCredentials(creds, new AndroidNetworkProxy(null));
         }
     }
 

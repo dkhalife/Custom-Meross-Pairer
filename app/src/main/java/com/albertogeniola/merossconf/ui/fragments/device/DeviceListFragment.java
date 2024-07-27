@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.albertogeniola.merossconf.AndroidPreferencesManager;
 import com.albertogeniola.merossconf.R;
+import com.albertogeniola.merossconf.model.AndroidNetworkProxy;
 import com.albertogeniola.merossconf.model.HttpClientManager;
 import com.albertogeniola.merosslib.model.http.ApiCredentials;
 import com.albertogeniola.merosslib.model.http.DeviceInfo;
@@ -77,7 +78,7 @@ public class DeviceListFragment extends Fragment {
         dialog.setMessage("Please wait reading devices info...");
         dialog.show();
 
-        HttpClientManager.getInstance().loadFromCredentials(creds);
+        HttpClientManager.getInstance().loadFromCredentials(creds, new AndroidNetworkProxy(null));
         HttpClientManager.getInstance().asyncListDevices(new HttpClientManager.Callback<List<DeviceInfo>>() {
             @Override
             public void onSuccess(List<DeviceInfo> result) {

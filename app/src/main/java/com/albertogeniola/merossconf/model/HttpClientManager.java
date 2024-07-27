@@ -5,11 +5,13 @@ import android.os.AsyncTask;
 import androidx.annotation.Nullable;
 
 import com.albertogeniola.merosslib.MerossHttpClient;
+import com.albertogeniola.merosslib.NetworkProxy;
 import com.albertogeniola.merosslib.model.http.ApiCredentials;
 import com.albertogeniola.merosslib.model.http.DeviceInfo;
 
 import java.util.List;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ScheduledExecutorService;
 
 public class HttpClientManager {
     // Singleton pattern
@@ -25,11 +27,11 @@ public class HttpClientManager {
     private MerossHttpClient mClient;
 
     private HttpClientManager() {
-        mClient = new MerossHttpClient();
+        mClient = new MerossHttpClient(null, new AndroidNetworkProxy(null));
     }
 
-    public void loadFromCredentials(ApiCredentials creds) {
-        mClient = new MerossHttpClient(creds);
+    public void loadFromCredentials(ApiCredentials creds, NetworkProxy network) {
+        mClient = new MerossHttpClient(creds, network);
     }
 
     public void asyncLogin(final String serverUrl, final String username, final String password, Callback<ApiCredentials> callback) {
@@ -37,87 +39,36 @@ public class HttpClientManager {
             throw new IllegalStateException("HttpClient has not been loaded yet.");
         }
 
-        CallbackTask<ApiCredentials> t = new CallbackTask<ApiCredentials>(callback) {
-            @Override
-            protected ApiCredentials run(MerossHttpClient client) throws Exception {
-                client.login(serverUrl, username, password);
-                return client.getCredentials();
-            }
-        };
-        t.execute(mClient);
+        try {
+            mClient.login(serverUrl, username, password);
+            callback.onSuccess(mClient.getCredentials());
+        } catch (Exception e) {
+            callback.onFailure(e);
+        }
     }
 
     public void asyncLogout(Callback<Void> callback) {
         if (mClient == null)
             throw new IllegalStateException("HttpClient has not been loaded yet");
 
-        CallbackTask<Void> t = new CallbackTask<Void>(callback) {
-            @Override
-            protected Void run(MerossHttpClient client) throws Exception {
-                client.logout();
-                return null;
-            }
-        };
-        t.execute(mClient);
+        try {
+            mClient.logout();
+            callback.onSuccess(null);
+        } catch (Exception e) {
+            callback.onFailure(e);
+        }
     }
 
     public void asyncListDevices(Callback<List<DeviceInfo>> callback) {
         if (mClient == null)
             throw new IllegalStateException("HttpClient has not been loaded yet");
 
-        CallbackTask<List<DeviceInfo>> t = new CallbackTask<List<DeviceInfo>>(callback) {
-            @Override
-            protected List<DeviceInfo> run(MerossHttpClient client) throws Exception {
-                return client.listDevices();
-            }
-        };
-        t.execute(mClient);
+        try {
+            callback.onSuccess(mClient.listDevices());
+        } catch (Exception e) {
+            callback.onFailure(e);
+        }
     }
-
-    private static abstract class CallbackTask<T> {
-        private final Callback<T> mCallback;
-
-        public CallbackTask(Callback<T> callback) {
-            mCallback = callback;
-        }
-
-        public void execute(MerossHttpClient client) {
-            execute(client, null);
-        }
-
-        public void execute(MerossHttpClient client, @Nullable Executor executor) {
-            HttpClientTask<T> task = new HttpClientTask<T>() {
-                private Exception mException = null;
-                @Override
-                protected T doInBackground(MerossHttpClient... merossHttpClients) {
-                    try {
-                        MerossHttpClient client = merossHttpClients[0];
-                        return run(client);
-                    } catch (Exception e) {
-                        mException = e;
-                        return null;
-                    }
-                }
-
-                @Override
-                protected void onPostExecute(T result) {
-                    if (mException == null)
-                        mCallback.onSuccess(result);
-                    else
-                        mCallback.onFailure(mException);
-                }
-            };
-
-            if (executor == null)
-                task.execute(client);
-            else
-                task.executeOnExecutor(executor, client);
-        }
-
-        protected abstract T run(MerossHttpClient client) throws Exception;
-    }
-
-    private abstract static class HttpClientTask<T> extends AsyncTask<MerossHttpClient, Void, T> {}
 
     public interface Callback<T> {
         void onSuccess(T result);

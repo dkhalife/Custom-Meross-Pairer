@@ -2,16 +2,12 @@ package com.albertogeniola.merossconf.ui.fragments.pair;
 
 import static androidx.core.content.ContextCompat.registerReceiver;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.NetworkRequest;
 import android.net.NetworkSpecifier;
-import android.net.wifi.WifiManager;
 import android.net.wifi.WifiNetworkSpecifier.Builder;
 import android.os.Bundle;
 import android.os.Handler;
@@ -31,6 +27,7 @@ import androidx.navigation.NavOptions;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.albertogeniola.merossconf.R;
+import com.albertogeniola.merossconf.model.AndroidNetworkProxy;
 import com.albertogeniola.merossconf.ui.PairActivityViewModel;
 import com.albertogeniola.merossconf.ui.views.TaskLine;
 import com.albertogeniola.merosslib.MerossDeviceAp;
@@ -42,7 +39,6 @@ import java.io.IOException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-
 
 public class FetchDeviceInfoFragment extends Fragment {
 
@@ -145,7 +141,7 @@ public class FetchDeviceInfoFragment extends Fragment {
                 super.onAvailable(network);
                 mainHandler.post(() -> {
                     connectivityManager.bindProcessToNetwork(network);
-                    device = new MerossDeviceAp();
+                    device = new MerossDeviceAp(new AndroidNetworkProxy(network));
                     stateMachine(Signal.AP_CONNECTED);
                 });
             }
@@ -183,7 +179,7 @@ public class FetchDeviceInfoFragment extends Fragment {
 
     private void collectDeviceInfo() {
         mConnectivityManager.unregisterNetworkCallback(mNetworkCallback);
-        worker.schedule(() -> {
+        worker.execute(() -> {
             try {
                 deviceInfo = device.getConfig();
                 stateMachine(Signal.INFO_GATHERED);
@@ -193,7 +189,7 @@ public class FetchDeviceInfoFragment extends Fragment {
                     stateMachine(Signal.ERROR);
                 });
             }
-        }, 2, TimeUnit.SECONDS);
+        });
     }
 
     private void completeActivityFragment() {

@@ -1,4 +1,4 @@
-package com.albertogeniola.merossconf.ui.fragments.pair;
+package com.albertogeniola.merossconf.model;
 
 import com.albertogeniola.merosslib.NetworkResponse;
 
